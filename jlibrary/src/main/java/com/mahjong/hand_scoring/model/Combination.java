@@ -1,0 +1,112 @@
+package com.mahjong.hand_scoring.model;
+
+import com.mahjong.hand_scoring.utils.StringHelper;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+/**
+ * Класс для хранения собранных костей в виде комбинаций.
+ * Содержит перечисление с типами комбинаций.
+ * */
+public record Combination(CombinationType type, Boolean isOpen, Tile tile) {
+    public enum CombinationType {
+        SINGLE, PAIR, THREE, FOUR, ORDERED_THREE, ORDERED_FOUR;
+
+        public static CombinationType of(List<String> parts) {
+            return switch (parts.get(0)) {
+                case "one", "single", "один", "одна" -> SINGLE;
+                case "pair", "two", "пара", "два", "две" -> PAIR;
+                case "three", "панг", "тройка", "три" -> THREE;
+                case "four", "конг", "четверка", "четыре" -> FOUR;
+                case "ordered", "чоу", "последовательность", "подряд" -> {
+                    if (parts.size() < 2)
+                        throw new IllegalArgumentException("Введите вид последовательности");
+                    yield switch (parts.get(1)) {
+                        case "three", "три", "база", "классика" -> ORDERED_THREE;
+                        case "four", "четыре", "расширение" -> ORDERED_FOUR;
+                        default -> throw new IllegalArgumentException("Введите число костей в последовательности");
+                    };
+                }
+                default -> throw new IllegalArgumentException("Введите корректную комбинацию");
+            };
+        }
+
+        public boolean isOrdered() {
+            return switch (this) {
+                case ORDERED_FOUR, ORDERED_THREE -> true;
+                default -> false;
+            };
+        }
+    }
+
+    /**
+     * Конструктор
+     * @throws IllegalArgumentException, если введённые значения пусты или противоречат логике игры
+     * */
+    public Combination {
+        if (type == null)
+            throw new IllegalArgumentException("Введите тип комбинации");
+        if (tile == null)
+            throw new IllegalArgumentException("Введите кость");
+        if (tile.isBonus() && type != CombinationType.SINGLE)
+            throw new IllegalArgumentException("Бонусы могут быть только по одному");
+        if (type.isOrdered()) {
+            if (!tile.isSuit())
+                throw new IllegalArgumentException("В последовательность собирают только масти");
+            switch (type) {
+                case ORDERED_THREE -> {
+                    if (tile.number() > 7)
+                        throw new IllegalArgumentException("Младшая кость классической последовательности не может быть старше 7");
+                }
+                case ORDERED_FOUR -> {
+                    if (tile.number() > 6)
+                        throw new IllegalArgumentException("Младшая кость расширенной последовательности не может быть старше 6");
+                }
+            }
+        }
+        if (tile.isBonus()) {
+            if (!isOpen) throw new IllegalArgumentException("Бонусы могут быть только открытыми");
+        } else if (type.equals(CombinationType.SINGLE)) {
+            if (isOpen) throw new IllegalArgumentException("Одиночные кости могут быть только закрытыми");
+        }
+
+    }
+
+    /**
+     * Метод-фабрика для создания комбинаций по словесному описанию
+     * Использование: вид комбинации кость
+     * @throws IllegalArgumentException, если введённые значения некорректны или противоречат логике игры
+     * */
+    public static Combination of(String input) {
+        if (input == null || StringHelper.normalize(input).isEmpty())
+            throw new IllegalArgumentException("Введите тип комбинации");
+        String[] parts = StringHelper.toParts(input);
+        if (parts.length < 4)
+            throw new IllegalArgumentException("Введите вид комбинации, а через пробел описание кости");
+        boolean isOpen = StringHelper.isOpen(parts[0]);
+        CombinationType type = CombinationType.of(StringHelper.cutFirst(parts));
+        int toSkip = switch (type) {
+            case ORDERED_FOUR, ORDERED_THREE -> 3;
+            default -> 2;
+        };
+        return new Combination(type, isOpen, Tile.of(StringHelper.skipParts(parts, toSkip)));
+    }
+
+    /**
+     * Метод-фабрика для создания комбинаций по словесному описанию
+     * Использование: строка - вид комбинации, объект Tile
+     * @throws IllegalArgumentException, если введённые значения некорректны или противоречат логике игры
+     * */
+    public static Combination of(String combinationStr, Tile tile) {
+        if (combinationStr == null || StringHelper.normalize(combinationStr).isEmpty())
+            throw new IllegalArgumentException("Введите тип комбинации");
+        String[] parts = StringHelper.toParts(combinationStr);
+        if (parts.length < 2)
+            throw new IllegalArgumentException("Введите вид комбинации");
+        boolean isOpen = StringHelper.isOpen(parts[0]);
+        CombinationType type = CombinationType.of(StringHelper.cutFirst(parts));
+        return new Combination(type, isOpen, tile);
+    }
+}

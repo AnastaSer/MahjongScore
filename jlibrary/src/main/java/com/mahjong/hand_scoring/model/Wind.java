@@ -1,5 +1,10 @@
 package com.mahjong.hand_scoring.model;
 
+import com.mahjong.hand_scoring.utils.StringHelper;
+
+/**
+ * Класс для описания кости вида "Ветер"
+ * */
 public enum Wind {
     EAST(1), SOUTH(2), WEST(3), NORTH(4);
     private int value;
@@ -12,8 +17,12 @@ public enum Wind {
         return value;
     }
 
+    /**
+     * Метод-фабрика для создания ветра по словесному обозначению его направления
+     * @throws IllegalArgumentException, если введённые значения некорректны
+     * */
     public static Wind of(String name) {
-        return switch (name.trim().toLowerCase()) {
+        return switch (StringHelper.normalize(name)) {
             case "east", "восток", "восточный" -> EAST;
             case "south", "юг", "южный" -> SOUTH;
             case "west", "запад", "западный" -> WEST;

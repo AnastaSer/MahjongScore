@@ -1,9 +1,12 @@
 package com.mahjong.hand_scoring.model;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.ls.LSOutput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,7 +44,8 @@ public class TileTest {
 
     @Test
     public void correctTiles(){
-        List<String> correctInputs = List.of("знак 8", "символ 9",
+        List<String> correctInputs = List.of("знак 8",
+                "символ 9",
                 "дот 2",
                 "точка 6",
                 "бамбук 7",
@@ -67,47 +71,74 @@ public class TileTest {
 
     @Test
     public void equalTiles() {
-        Tile wind1 = new Tile(Tile.TileType.WIND, 1);
-        List<Tile> sameToWind1 = List.of(Tile.of("ветер 1"),
-                Tile.of("ветер восточный"),
-                Tile.of("wind 1"),
-                Tile.of("wind east"));
-        sameToWind1.stream().forEach(same -> assertEquals(same, wind1));
+        testEqualWind(1, List.of("east", "восточный"));
+        testEqualWind(2, List.of("south", "южный"));
+        testEqualWind(3, List.of("west", "западный"));
+        testEqualWind(4, List.of("north", "северный"));
 
-        Tile wind2 = new Tile(Tile.TileType.WIND, 2);
-        List<Tile> sameToWind2 = List.of(
-                Tile.of("ветер южный"),
-                Tile.of("wind south"));
-        sameToWind2.stream().forEach(same -> assertEquals(same, wind2));
+        testEqualDragon(1, List.of("white", "белый"));
+        testEqualDragon(2, List.of("red", "красный"));
+        testEqualDragon(3, List.of("green", "зелёный"));
 
-        Tile wind3 = new Tile(Tile.TileType.WIND, 3);
-        List<Tile> sameToWind3 = List.of(
-                Tile.of("ветер западный"),
-                Tile.of("wind west"));
-        sameToWind3.stream().forEach(same -> assertEquals(same, wind3));
+        testEqualBonus(Tile.TileType.BONUS_FLOWER, List.of("flower", "цветок"));
+        testEqualBonus(Tile.TileType.BONUS_SEASON, List.of("season", "сезон"));
 
-        Tile wind4 = new Tile(Tile.TileType.WIND, 4);
-        List<Tile> sameToWind4 = List.of(
-                Tile.of("ветер северный"),
-                Tile.of("wind north"));
-        sameToWind4.stream().forEach(same -> assertEquals(same, wind4));
+        testEqualSuit(Tile.TileType.SIGN, List.of("sign", "знак", "символ"));
+        testEqualSuit(Tile.TileType.DOT, List.of("dot", "дот", "точка"));
+        testEqualSuit(Tile.TileType.BAMBOO, List.of("bamboo", "бамбук"));
+    }
 
-        Tile dragon1 = new Tile(Tile.TileType.DRAGON, 1);
-        List<Tile> sameToDragon1 = List.of(
-                Tile.of("дракон белый"),
-                Tile.of("dragon white"));
-        sameToDragon1.stream().forEach(same -> assertEquals(same, dragon1));
+    private void testEqual(Tile origin, List<Tile> same) {
+        System.out.println("Тестирую: " + origin);
+        same.stream().forEach(copy -> {
+            System.out.println("Сравниваю с : " + copy);
+            assertEquals(copy, origin);
+        });
+    }
 
-        Tile dragon2 = new Tile(Tile.TileType.DRAGON, 2);
-        List<Tile> sameToDragon2 = List.of(
-                Tile.of("дракон красный"),
-                Tile.of("dragon red"));
-        sameToDragon2.stream().forEach(same -> assertEquals(same, dragon2));
+    private void testEqualNotSuit(Tile.TileType type, List<String> prefixes, int number, List<String> someNames) {
+        List<String> names = new ArrayList<>();
+        names.add("" + number);
+        names.addAll(someNames);
+        List<Tile> tiles = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            int index = i;
+            tiles.addAll(names.stream().
+                    map(name -> Tile.of(prefixes.get(index) + " " + name)).
+                    collect(Collectors.toList()));
+        }
+        testEqual(new Tile(type, number), tiles);
+    }
 
-        Tile dragon3 = new Tile(Tile.TileType.DRAGON, 3);
-        List<Tile> sameToDragon3 = List.of(
-                Tile.of("дракон зелёный"),
-                Tile.of("dragon green"));
-        sameToDragon3.stream().forEach(same -> assertEquals(same, dragon3));
+    private void testEqualWind(int number, List<String> someNames) {
+        testEqualNotSuit(Tile.TileType.WIND, List.of("wind", "ветер"), number, someNames);
+    }
+
+    private void testEqualDragon(int number, List<String> someNames) {
+        testEqualNotSuit(Tile.TileType.DRAGON, List.of("dragon", "дракон"), number, someNames);
+    }
+
+    private void testEqualBonus(Tile.TileType type, List<String> names) {
+        List<String> prefixes = List.of("bonus", "бонусный", "бонус");
+        for (int n = 1; n <= 4; n++) {
+            int number = n;
+            List<Tile> tiles = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                int index = i;
+                tiles.addAll(names.stream().
+                        map(name -> Tile.of(prefixes.get(index) + " " + name + " " + number)).
+                        collect(Collectors.toList()));
+            }
+            testEqual(new Tile(type, number), tiles);
+        }
+    }
+
+    private void testEqualSuit(Tile.TileType type, List<String> names) {
+        for (int n = 1; n <= 9; n++) {
+            int number = n;
+            testEqual(new Tile(type, number),
+                    names.stream().map(name -> Tile.of(name + " " + number)).
+                            collect(Collectors.toUnmodifiableList()));
+        }
     }
 }
