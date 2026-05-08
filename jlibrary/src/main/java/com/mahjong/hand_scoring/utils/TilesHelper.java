@@ -19,7 +19,7 @@ public class TilesHelper {
      * Чтобы разделить комбинации, необходимо использовать сепараторы вместо описания кости: "|", ",", ";"
      * Так же разделяются комбинации при перемене статуса костей с "открытых" на "закрытые"
      * И при выпадении кости из возможной комбинации (другой козырь, бонус, кость другой масти, кость, прерывающая цепочку по возрастанию)
-     * @throws IllegalArgumentException, если полученные комбинации совпадают один в один
+     * @throws IllegalArgumentException, если полученные не последовательные комбинации совпадают один в один
      * */
     public static List<Combination> tilesToCombinations(List<InputTile> inputTiles) {
         if (inputTiles == null)
@@ -39,7 +39,7 @@ public class TilesHelper {
                 } else {
                     InputTile analyzeFirst = analyze.getFirst();
                     InputTile analyzeLast = analyze.getLast();
-                    if (inputTile.equals(analyzeFirst)) {
+                    if (inputTile.equals(analyzeFirst) && inputTile.equals(analyzeLast)) {
                         analyze.add(inputTile);
                         if (analyze.size() == 4) {
                             addCombination(new Combination(Combination.CombinationType.FOUR, inputTile.isOpen(), inputTile.tile()), combinations);
@@ -98,7 +98,7 @@ public class TilesHelper {
     }
 
     private static void addCombination(Combination newOne, List<Combination> gotCombinations) {
-        if (!gotCombinations.contains(newOne))
+        if (newOne.type().isOrdered() || !gotCombinations.contains(newOne))
             gotCombinations.add(newOne);
         else
             throw new IllegalArgumentException("В игре не может быть одинаковых комбинаций");

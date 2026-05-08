@@ -60,8 +60,6 @@ public class InputHand {
      * @throws IllegalArgumentException при выявлении любого нарушения
      * */
     private void verify() {
-        if (combinations.stream().distinct().count() != combinations.size())
-            throw new IllegalArgumentException("Одинаковые комбинации невозможны");
         withoutBonuses = combinations.stream().filter(combo -> !combo.tile().isBonus()).collect(Collectors.toUnmodifiableList());
         if (withoutBonuses.size() > 13)
             throw new IllegalArgumentException("Слишком много комбинаций");

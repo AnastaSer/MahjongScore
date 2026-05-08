@@ -42,9 +42,24 @@ public record InputTile(InputTileType type, boolean isOpen, Tile tile) {
 
     /**
      * Метод-фабрика, создающий пользовательскую кость с типом TILE по строковому описанию открытости и кости
-     * @throws IllegalArgumentException при некорретном описании флага или кости.
+     * @throws IllegalArgumentException при некорректном описании флага или кости.
      * */
     public static InputTile of(String isOpenStr, Tile tile) {
         return new InputTile(InputTileType.TILE, StringHelper.isOpen(isOpenStr), tile);
+    }
+
+    /**
+     * Метод-фабрика, создающий пользовательскую кость с типом TILE
+     * @throws IllegalArgumentException при некорректном описании флага или кости.
+     * */
+    public static InputTile of(boolean isOpen, Tile tile) {
+        return new InputTile(InputTileType.TILE, isOpen, tile);
+    }
+
+    /**
+     * Метод-фабрика, возвращающий разделитель
+     * */
+    public static InputTile separator() {
+        return new InputTile(InputTileType.SEPARATOR, false, null);
     }
 }
