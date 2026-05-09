@@ -3,6 +3,7 @@ package com.mahjong.hand_scoring.model;
 import com.mahjong.hand_scoring.utils.StringHelper;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -10,7 +11,14 @@ import java.util.stream.Collectors;
  * Класс для хранения собранных костей в виде комбинаций.
  * Содержит перечисление с типами комбинаций.
  * */
-public record Combination(CombinationType type, Boolean isOpen, Tile tile) {
+public record Combination(CombinationType type, Boolean isOpen, Tile tile) implements Comparable<Combination> {
+    @Override
+    public int compareTo(Combination o) {
+        return Comparator.comparing(Combination::type)
+                .thenComparing(Combination::tile)
+                .compare(this, o);
+    }
+
     public enum CombinationType {
         SINGLE, PAIR, THREE, FOUR, ORDERED_THREE, ORDERED_FOUR;
 

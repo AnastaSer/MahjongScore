@@ -1,8 +1,8 @@
 package com.mahjong.hand_scoring.model;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -79,6 +79,7 @@ public class HandFlags {
     }
 
     private long allFlags = 0l;
+    private Set<Flag> flagsSet = new TreeSet<>();
 
     /**
      * Конструктор из списка флагов
@@ -89,6 +90,7 @@ public class HandFlags {
             throw new IllegalArgumentException("Введите список флагов или воспользуйтесь пустым конструктором");
         flags.forEach(this::addUnchekedFlag);
         verify();
+        flagsSet.addAll(flags);
     }
 
     /**
@@ -100,6 +102,7 @@ public class HandFlags {
             throw new IllegalArgumentException("Введите список флагов или воспользуйтесь пустым конструктором");
         Arrays.stream(flags).forEach(this::addUnchekedFlag);
         verify();
+        flagsSet.addAll(Arrays.stream(flags).collect(Collectors.toSet()));
     }
 
     /**
@@ -111,6 +114,18 @@ public class HandFlags {
             throw new IllegalArgumentException("Введите флаг или воспользуйтесь пустым конструктором");
         addUnchekedFlag(flag);
         verify();
+        flagsSet.add(flag);
+    }
+
+    /**
+     * Конструктор из другого поля с флагами
+     * @throws IllegalArgumentException, если передан null
+     * */
+    public HandFlags(HandFlags toCopy) {
+        if (toCopy == null)
+            throw new IllegalArgumentException("Нельзя создавать копию null");
+        this.allFlags = toCopy.allFlags;
+        this.flagsSet.addAll(toCopy.flagsSet);
     }
 
     public HandFlags() {}
@@ -142,12 +157,8 @@ public class HandFlags {
         return false;
     }
 
-    private boolean hasAnyTwoOfFlags(Flag ... flags) {
-        int count = 0;
-        for (Flag flag: flags) {
-            if (hasFlag(flag)) count++;
-        }
-        return count > 1;
+    private boolean hasBothFlags(Flag flag1, Flag flag2) {
+        return hasFlag(flag1) && hasFlag(flag2);
     }
 
     /**
@@ -156,41 +167,59 @@ public class HandFlags {
      * Отменяет действие, если после его применения ломается логика заполнения флагов.
      * */
     private void applyMethod(List<Flag> flags, Consumer<Flag> method) {
-        long wasFlags = allFlags;
+        HandFlags was = new HandFlags(this);
         flags.stream().forEach(method);
         try {
             verify();
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка обработки флагов:" + e.getMessage());
-            allFlags = wasFlags;
+            System.out.println("Ошибка обработки флагов: " + e.getMessage());
+            copyFrom(was);
         }
     }
 
     private void applyMethod(Flag flag, Consumer<Flag> method) {
-        long wasFlags = allFlags;
+        HandFlags was = new HandFlags(this);
         method.accept(flag);
         try {
             verify();
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка обработки флага:" + e.getMessage());
-            allFlags = wasFlags;
+            copyFrom(was);
         }
+    }
+
+    private void copyFrom(HandFlags was) {
+        this.allFlags = was.allFlags;
+        this.flagsSet.clear();
+        this.flagsSet.addAll(was.flagsSet);
     }
 
     private void addUnchekedFlag(Flag flag) {
         allFlags |= flag.getValue();
+        flagsSet.add(flag);
     }
 
     private void removeUnchekedFlag(Flag flag) {
         allFlags &= ~flag.getValue();
+        if (flagsSet.contains(flag))
+            flagsSet.remove(flag);
     }
 
     /**
      * Метод, проверяющий логику сочетаемости флагов
      * */
     private void verify() {
-        if (hasAnyTwoOfFlags(Flag.CLEAR_SUIT, Flag.CLEAR_SUIT_WITH_TRUMPS, Flag.TRUMPS, Flag.TRUMPS_ONES_NINES)) {
-            throw new IllegalArgumentException("Может быть либо чистая масть, либо чистая масть с козырями, либо только козыри, либо козыри с единицами и девятками");
+        if (hasBothFlags(Flag.CLEAR_SUIT, Flag.TRUMPS)) {
+            throw new IllegalArgumentException("Либо абсолютно чистая масть, либо только козыри");
+        }
+        if (hasBothFlags(Flag.CLEAR_SUIT, Flag.CLEAR_SUIT_WITH_TRUMPS)) {
+            throw new IllegalArgumentException("Либо абсолютно чистая масть, либо чистая масть с козырями");
+        }
+        if (hasBothFlags(Flag.CLEAR_SUIT_WITH_TRUMPS, Flag.TRUMPS)) {
+            throw new IllegalArgumentException("Либо чистая масть с козырями, либо только козыри");
+        }
+        if (hasBothFlags(Flag.TRUMPS, Flag.TRUMPS_ONES_NINES)) {
+            throw new IllegalArgumentException("Либо только козыри, либо козыри с единицами и девятками");
         }
         if (!hasFlag(Flag.MAHJONG) && ((allFlags & onlyMahjongFlags) != 0)) {
             throw new IllegalArgumentException("Флаги, выбранные для маджонга не применимы без маджонга");
@@ -202,6 +231,22 @@ public class HandFlags {
         }
         if (hasFlag(Flag.HAS_ALL_DRAGONS) && hasFlag(Flag.HAS_ALL_WINDS))
             throw new IllegalArgumentException("Невозможно собрать и драконов, и ветра для умножения маджонга");
-        System.out.println("Ok");
+    }
+
+    @Override
+    public String toString() {
+        return Long.toBinaryString(allFlags);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        HandFlags handFlags = (HandFlags) o;
+        return allFlags == handFlags.allFlags;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(allFlags);
     }
 }

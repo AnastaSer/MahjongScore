@@ -29,9 +29,7 @@ public class HandFlagsTest {
         incorrectList(List.of(
                 List.of(HandFlags.Flag.CLEAR_SUIT, HandFlags.Flag.CLEAR_SUIT_WITH_TRUMPS),
                 List.of(HandFlags.Flag.CLEAR_SUIT, HandFlags.Flag.TRUMPS),
-                List.of(HandFlags.Flag.CLEAR_SUIT, HandFlags.Flag.TRUMPS_ONES_NINES),
                 List.of(HandFlags.Flag.CLEAR_SUIT_WITH_TRUMPS, HandFlags.Flag.TRUMPS),
-                List.of(HandFlags.Flag.CLEAR_SUIT_WITH_TRUMPS, HandFlags.Flag.TRUMPS_ONES_NINES),
                 List.of(HandFlags.Flag.TRUMPS, HandFlags.Flag.TRUMPS_ONES_NINES),
                 List.of(HandFlags.Flag.CLEAR_SUIT, HandFlags.Flag.CLEAR_SUIT_WITH_TRUMPS, HandFlags.Flag.TRUMPS),
                 List.of(HandFlags.Flag.CLEAR_SUIT, HandFlags.Flag.CLEAR_SUIT_WITH_TRUMPS, HandFlags.Flag.TRUMPS_ONES_NINES),

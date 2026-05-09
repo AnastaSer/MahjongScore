@@ -1,6 +1,7 @@
 package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.TilesHelper;
+import org.w3c.dom.ls.LSOutput;
 
 import javax.sound.sampled.Mixer;
 import java.util.*;
@@ -29,10 +30,14 @@ public class InputHand {
 
     public InputHand(Wind playersWind, Wind vipWind,
                      HandFlags knownFlags, List<Combination> combinations) {
-        this.combinations = combinations;
+        if (playersWind == null)
+            throw new IllegalArgumentException("Задайте ветер игрока");
         this.playersWind = playersWind;
+        if (vipWind == null)
+            throw new IllegalArgumentException("Задайте преимущественный ветер");
         this.vipWind = vipWind;
-        this.knownFlags = knownFlags;
+        this.knownFlags = knownFlags == null ? new HandFlags() : knownFlags;
+        this.combinations = combinations == null ? new ArrayList<>() : combinations.stream().sorted().collect(Collectors.toList());
         verify();
     }
 
@@ -48,6 +53,83 @@ public class InputHand {
         this(playersWind, vipWind, TilesHelper.tilesToCombinations(tiles));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        InputHand inputHand = (InputHand) o;
+        return hasOnesAndNines == inputHand.hasOnesAndNines
+                && hasOthers == inputHand.hasOthers
+                && isFull == inputHand.isFull
+                && Objects.equals(combinations, inputHand.combinations)
+                && Objects.equals(withoutBonuses, inputHand.withoutBonuses)
+                && Objects.equals(bonuses, inputHand.bonuses)
+                && Objects.equals(allTiles, inputHand.allTiles)
+                && Objects.equals(suits, inputHand.suits)
+                && Objects.equals(winds, inputHand.winds)
+                && Objects.equals(dragons, inputHand.dragons)
+                && playersWind == inputHand.playersWind
+                && vipWind == inputHand.vipWind
+                && Objects.equals(knownFlags, inputHand.knownFlags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(combinations, withoutBonuses, bonuses, allTiles, suits, winds, dragons,
+                hasOnesAndNines, hasOthers, playersWind, vipWind, knownFlags, isFull);
+    }
+
+    public List<Combination> getCombinations() {
+        return Collections.unmodifiableList(combinations);
+    }
+
+    public List<Combination> getWithoutBonuses() {
+        return Collections.unmodifiableList(withoutBonuses);
+    }
+
+    public List<Combination> getBonuses() {
+        return Collections.unmodifiableList(bonuses);
+    }
+
+    public Map<Tile, Integer> getAllTiles() {
+        return Collections.unmodifiableMap(allTiles);
+    }
+
+    public Set<Tile.TileType> getSuits() {
+        return Collections.unmodifiableSet(suits);
+    }
+
+    public Set<Integer> getWinds() {
+        return Collections.unmodifiableSet(winds);
+    }
+
+    public Set<Integer> getDragons() {
+        return Collections.unmodifiableSet(dragons);
+    }
+
+    public boolean isHasOnesAndNines() {
+        return hasOnesAndNines;
+    }
+
+    public boolean isHasOthers() {
+        return hasOthers;
+    }
+
+    public Wind getPlayersWind() {
+        return playersWind;
+    }
+
+    public Wind getVipWind() {
+        return vipWind;
+    }
+
+    public HandFlags getKnownFlags() {
+        return new HandFlags(knownFlags);
+    }
+
+    public boolean isFull() {
+        return isFull;
+    }
+
     /**
      * Главный метод проверки корректности переданных пользователем данных.
      * Может принимать как полные наборы, так и сокращённые.
@@ -60,10 +142,11 @@ public class InputHand {
      * @throws IllegalArgumentException при выявлении любого нарушения
      * */
     private void verify() {
-        withoutBonuses = combinations.stream().filter(combo -> !combo.tile().isBonus()).collect(Collectors.toUnmodifiableList());
+        checkDuplicates();
+        withoutBonuses = combinations.stream().filter(combo -> !combo.tile().isBonus()).sorted().collect(Collectors.toUnmodifiableList());
         if (withoutBonuses.size() > 13)
             throw new IllegalArgumentException("Слишком много комбинаций");
-        bonuses = combinations.stream().filter(combo -> combo.tile().isBonus()).collect(Collectors.toUnmodifiableList());
+        bonuses = combinations.stream().filter(combo -> combo.tile().isBonus()).sorted().collect(Collectors.toUnmodifiableList());
         fillAllTiles();
 
         int notBonusCount = withoutBonuses.stream().mapToInt(combo ->
@@ -96,18 +179,26 @@ public class InputHand {
             }
         }
         isFull = (notBonusCount >= 13);
-        if (isFull && notBonusCount == 13 && !knownFlags.hasFlag(HandFlags.Flag.MAHJONG))
+        if (isFull && notBonusCount == 13 && knownFlags.hasFlag(HandFlags.Flag.MAHJONG))
                 throw new IllegalArgumentException("При маджонге не может быть 13 костей");
 
         verifyFlags();
         setFlags();
     }
 
+    private void checkDuplicates() {
+        Set<String> seen = new HashSet<>();
+        if (combinations.stream()
+                .filter(c -> !c.type().isOrdered())
+                .anyMatch(c -> !seen.add(c.type().name() + "_" + c.tile())))
+            throw new IllegalArgumentException("Недопустимы дубликаты не последовательностей");
+    }
+
     private void verifyFlags() {
-        if (knownFlags.hasFlag(CLEAR_SUIT) && (suits.size() > 1 || !winds.isEmpty() || !dragons.isEmpty()))
-            throw new IllegalArgumentException("Чистая масть не подтверждена");
-        if (knownFlags.hasFlag(CLEAR_SUIT_WITH_TRUMPS) && (suits.size() > 1))
+        if (knownFlags.hasFlag(CLEAR_SUIT) && (suits.size() != 1 || !winds.isEmpty() || !dragons.isEmpty()))
             throw new IllegalArgumentException("Абсолютно чистая масть не подтверждена");
+        if (knownFlags.hasFlag(CLEAR_SUIT_WITH_TRUMPS) && (suits.size() != 1))
+            throw new IllegalArgumentException("Чистая масть не подтверждена");
         if (knownFlags.hasFlag(TRUMPS) && !suits.isEmpty())
             throw new IllegalArgumentException("Есть не только козыри");
         if (knownFlags.hasFlag(TRUMPS_ONES_NINES) && hasOthers)
@@ -115,8 +206,9 @@ public class InputHand {
         if (knownFlags.hasFlag(MAHJONG)) {
             if (knownFlags.hasFlag(MIZER) && !isMizer())
                 throw new IllegalArgumentException("Есть комбинации, приносящие очки");
-            if (knownFlags.hasFlag(NO_ORDEREDS) && !noOrdereds())
-                throw new IllegalArgumentException("Есть последовательности");
+            Optional<String> noOrdersCheck = noOrdereds();
+            if (knownFlags.hasFlag(NO_ORDEREDS) && noOrdersCheck.isPresent())
+                throw new IllegalArgumentException(noOrdersCheck.get());
             if (knownFlags.hasFlag(HAS_ALL_DRAGONS) && !hasAllDragons())
                 throw new IllegalArgumentException("Либо не все драконы, либо пара не из драконов");
             if (knownFlags.hasFlag(HAS_ALL_WINDS) && !hasAllWinds())
@@ -125,13 +217,17 @@ public class InputHand {
     }
 
     private void setFlags() {
-        if(!isFull)
+        if (!isFull)
             return;
 
-        if (suits.isEmpty())
+        if (!winds.isEmpty() && !dragons.isEmpty() && suits.isEmpty()) {
             knownFlags.addFlag(TRUMPS);
-        if (hasOnesAndNines && !hasOthers)
+        }
+
+        if (hasOnesAndNines && !hasOthers) {
             knownFlags.addFlag(TRUMPS_ONES_NINES);
+        }
+
         if (suits.size() == 1) {
             if (winds.isEmpty() && dragons.isEmpty())
                 knownFlags.addFlag(CLEAR_SUIT);
@@ -141,7 +237,7 @@ public class InputHand {
         if (knownFlags.hasFlag(MAHJONG)) {
             if(isMizer())
                 knownFlags.addFlag(MIZER);
-            if (noOrdereds())
+            if (noOrdereds().isEmpty())
                 knownFlags.addFlag(NO_ORDEREDS);
             if (hasAllDragons())
                 knownFlags.addFlag(HAS_ALL_DRAGONS);
@@ -162,11 +258,19 @@ public class InputHand {
         }).count() == 0;
     }
 
-    private boolean noOrdereds() {
-        return combinations.stream().filter(combo -> switch (combo.type()) {
+    private Optional<String> noOrdereds() {
+        if (combinations.stream().filter(combo -> switch (combo.type()) {
             case ORDERED_FOUR, ORDERED_THREE -> true;
             default -> false;
-        }).count() == 0;
+        }).count() != 0) {
+            return Optional.of("Есть последовательности");
+        }
+        if (withoutBonuses.stream().filter(combo -> switch (combo.type()) {
+            case FOUR, THREE -> true;
+            default -> false;
+        }).count() != 4)
+            return Optional.of("Введены не все комбинации. Невозможно подтвердить флаг \'Без последовательностей\'");
+        return Optional.empty();
     }
 
     private boolean hasAllWinds() {
@@ -214,10 +318,11 @@ public class InputHand {
         allTiles.put(tile, allTiles.get(tile) + 1);
         if (tile.isSuit()) {
             suits.add(tile.type());
-            if (tile.number() == 1 || tile.number() == 9)
+            if (tile.number() == 1 || tile.number() == 9) {
                 hasOnesAndNines = true;
-            else
+            } else {
                 hasOthers = true;
+            }
         } else if (tile.type() == Tile.TileType.WIND) {
             winds.add(tile.number());
         } else {

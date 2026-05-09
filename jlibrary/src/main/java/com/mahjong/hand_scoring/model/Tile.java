@@ -3,13 +3,21 @@ package com.mahjong.hand_scoring.model;
 import com.mahjong.hand_scoring.utils.StringHelper;
 
 import javax.swing.*;
+import java.util.Comparator;
 import java.util.Locale;
 
 /**
  * Класс для описания кости.
  * Содержит перечисление всех мастей, козырей и бонусов
  * */
-public record Tile(TileType type, int number) {
+public record Tile(TileType type, int number) implements Comparable<Tile> {
+    @Override
+    public int compareTo(Tile o) {
+        return Comparator.comparing(Tile::type)
+                .thenComparing(Tile::number)
+                .compare(this, o);
+    }
+
     public enum TileType {
         SIGN, DOT, BAMBOO, WIND, DRAGON, BONUS_SEASON, BONUS_FLOWER
     }

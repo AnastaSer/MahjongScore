@@ -22,8 +22,8 @@ public class TilesHelper {
      * @throws IllegalArgumentException, если полученные не последовательные комбинации совпадают один в один
      * */
     public static List<Combination> tilesToCombinations(List<InputTile> inputTiles) {
-        if (inputTiles == null)
-            throw new IllegalArgumentException("Нет переданных костей");
+        if (inputTiles == null || inputTiles.isEmpty())
+            return new ArrayList<>();
         List<Combination> combinations = new ArrayList<>();
         List<InputTile> analyze = new ArrayList<>();
         for (InputTile inputTile: inputTiles) {
