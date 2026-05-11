@@ -1,5 +1,10 @@
 package com.mahjong.hand_scoring.utils;
 
+import com.mahjong.hand_scoring.model.Dragon;
+import com.mahjong.hand_scoring.model.Tile;
+import com.mahjong.hand_scoring.model.Wind;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +49,14 @@ public class StringHelper {
         return Arrays.stream(parts).skip(toSkip).collect(Collectors.joining(" "));
     }
 
+    public static String firstParts(String[] parts, int toWrite) {
+        return Arrays.stream(parts).limit(toWrite).collect(Collectors.joining(" "));
+    }
+
+    public static Pair<String, String> separate(String[] parts, int where) {
+        return Pair.of(firstParts(parts, where), skipParts(parts, where));
+    }
+
     /**
      * Преобразует массив строк в список строк, пропустив первое
      * */
@@ -63,5 +76,38 @@ public class StringHelper {
      * */
     public static String normalize(String input) {
         return input.trim().replace("  ", " ").toLowerCase();
+    }
+
+    public static boolean isTileNumber(String maybeTileNumber) {
+        return Tile.isCorrectTileNumber(maybeTileNumber) || Wind.isCorrectWindName(maybeTileNumber) || Dragon.isCorrectDragonName(maybeTileNumber);
+    }
+
+    public static Pair<String, String> combinationStr(String inputStr) {
+        Pair<String, String> notFound = Pair.of("", inputStr);
+        String[] parts = toParts(inputStr);
+        if (parts.length < 4) {
+            System.out.println("Слишком мало слов для комбинации");
+            return notFound;
+        }
+        try {
+            isOpen(parts[0]);
+            if (isTileNumber(parts[3]))
+                return separate(parts, 4);
+            else if (parts.length >= 5 && isTileNumber(parts[4]))
+                return separate(parts, 5);
+            else
+                return notFound;
+        } catch (IllegalArgumentException ignore) {
+            System.out.println("Не описывает комбинацию");
+            return notFound;
+        }
+    }
+
+    public static Pair<String, String> inputTileStr(String inputStr) {
+        return Pair.of("", inputStr);
+    }
+
+    public static Pair<String, String> handFlagStr(String inputStr) {
+        return Pair.of("", inputStr);
     }
 }

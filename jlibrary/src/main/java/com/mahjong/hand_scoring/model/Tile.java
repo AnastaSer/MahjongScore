@@ -2,8 +2,10 @@ package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.StringHelper;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -11,12 +13,7 @@ import java.util.Locale;
  * Содержит перечисление всех мастей, козырей и бонусов
  * */
 public record Tile(TileType type, int number) implements Comparable<Tile> {
-    @Override
-    public int compareTo(Tile o) {
-        return Comparator.comparing(Tile::type)
-                .thenComparing(Tile::number)
-                .compare(this, o);
-    }
+    private static final List<String> numbers = List.of("1", "2","3","4","5","6","7","8","9");
 
     public enum TileType {
         SIGN, DOT, BAMBOO, WIND, DRAGON, BONUS_SEASON, BONUS_FLOWER
@@ -162,5 +159,16 @@ public record Tile(TileType type, int number) implements Comparable<Tile> {
             default -> "";
         };
         return typeStr + " " + number;
+    }
+
+    @Override
+    public int compareTo(Tile o) {
+        return Comparator.comparing(Tile::type)
+                .thenComparing(Tile::number)
+                .compare(this, o);
+    }
+
+    public static boolean isCorrectTileNumber(String number) {
+        return numbers.contains(number);
     }
 }

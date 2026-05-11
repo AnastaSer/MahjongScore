@@ -41,7 +41,7 @@ public class HandFlags {
          * Метод-фабрика для создания флага руки по словесному обозначению
          * @throws IllegalArgumentException, если введённые значения некорректны
          * */
-        public Flag of(String description) {
+        public static Flag of(String description) {
             return switch (description) {
                 case "чистая масть" -> CLEAR_SUIT;
                 case "чистая масть с драконами и ветрами" -> CLEAR_SUIT_WITH_TRUMPS;
@@ -88,9 +88,11 @@ public class HandFlags {
     public HandFlags(List<Flag> flags) {
         if (flags == null)
             throw new IllegalArgumentException("Введите список флагов или воспользуйтесь пустым конструктором");
-        flags.forEach(this::addUnchekedFlag);
-        verify();
-        flagsSet.addAll(flags);
+        if (!flags.isEmpty()) {
+            flags.forEach(this::addUnchekedFlag);
+            verify();
+            flagsSet.addAll(flags);
+        }
     }
 
     /**
@@ -100,9 +102,11 @@ public class HandFlags {
     public HandFlags(Flag ... flags) {
         if (flags == null)
             throw new IllegalArgumentException("Введите список флагов или воспользуйтесь пустым конструктором");
-        Arrays.stream(flags).forEach(this::addUnchekedFlag);
-        verify();
-        flagsSet.addAll(Arrays.stream(flags).collect(Collectors.toSet()));
+        if (flags.length != 0) {
+            Arrays.stream(flags).forEach(this::addUnchekedFlag);
+            verify();
+            flagsSet.addAll(Arrays.stream(flags).collect(Collectors.toSet()));
+        }
     }
 
     /**

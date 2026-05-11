@@ -2,6 +2,8 @@ package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.StringHelper;
 
+import java.util.List;
+
 /**
  * Класс для описания кости вида "Дракон"
  * */
@@ -17,16 +19,25 @@ public enum Dragon {
         return value;
     }
 
+    private static final List<String> whiteDragon = List.of("white", "белый");
+    private static final List<String> redDragon = List.of("red", "красный");
+    private static final List<String> greenDragon = List.of("green", "зелёный");
     /**
      * Метод-фабрика для создания дракона по словесному обозначению его цвета
      * @throws IllegalArgumentException, если введённые значения некорректны
      * */
     public static Dragon of(String name) {
-        return switch (StringHelper.normalize(name)) {
-            case "white", "белый" -> WHITE;
-            case "red", "красный" -> RED;
-            case "green", "зелёный" -> GREEN;
-            default -> throw new IllegalArgumentException("Введите корректный цвет дракона");
-        };
+        String normalName = StringHelper.normalize(name);
+        if (whiteDragon.contains(normalName))
+            return WHITE;
+        if (redDragon.contains(normalName))
+            return RED;
+        if (greenDragon.contains(normalName))
+            return GREEN;
+        throw new IllegalArgumentException("Введите корректный цвет дракона");
+    }
+
+    public static boolean isCorrectDragonName(String name) {
+        return whiteDragon.contains(name) || redDragon.contains(name) || greenDragon.contains(name);
     }
 }

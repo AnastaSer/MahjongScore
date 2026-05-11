@@ -1,11 +1,8 @@
 package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.TilesHelper;
-import org.w3c.dom.ls.LSOutput;
 
-import javax.sound.sampled.Mixer;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.mahjong.hand_scoring.model.HandFlags.Flag.*;

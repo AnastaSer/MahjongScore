@@ -1,1 +1,1 @@
-rootProject.name = "jlibrary"
+rootProject.name = "hand_scorring"
