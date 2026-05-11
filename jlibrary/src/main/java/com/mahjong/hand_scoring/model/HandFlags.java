@@ -1,5 +1,7 @@
 package com.mahjong.hand_scoring.model;
 
+import com.mahjong.hand_scoring.utils.StringHelper;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -42,7 +44,7 @@ public class HandFlags {
          * @throws IllegalArgumentException, если введённые значения некорректны
          * */
         public static Flag of(String description) {
-            return switch (description) {
+            return switch (StringHelper.normalize(description)) {
                 case "чистая масть" -> CLEAR_SUIT;
                 case "чистая масть с драконами и ветрами" -> CLEAR_SUIT_WITH_TRUMPS;
                 case "только драконы и ветра" -> TRUMPS;
@@ -58,7 +60,7 @@ public class HandFlags {
                 case "завершение свободной костью" -> FINISHED_WITH_FREE_TILE;
                 case "завершение последней доступной" -> FINISHED_WITH_LAST_IN_GAME;
                 case "завершение ограблением открытого конга" -> FINISHED_BY_ROBBING_OPEN_KONG;
-                default -> throw new IllegalArgumentException("Введите точное описание");
+                default -> throw new IllegalArgumentException("Введите точное описание: \'" + description + "\'");
             };
         }
     }

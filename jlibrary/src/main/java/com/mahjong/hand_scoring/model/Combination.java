@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * Содержит перечисление с типами комбинаций.
  * */
 public record Combination(CombinationType type, Boolean isOpen, Tile tile) implements Comparable<Combination> {
+
     @Override
     public int compareTo(Combination o) {
         return Comparator.comparing(Combination::type)
@@ -21,6 +22,12 @@ public record Combination(CombinationType type, Boolean isOpen, Tile tile) imple
 
     public enum CombinationType {
         SINGLE, PAIR, THREE, FOUR, ORDERED_THREE, ORDERED_FOUR;
+
+        private static final List<String> singleStr = List.of("one", "single", "один", "одна");
+        private static final List<String> pairStr = List.of("pair", "two", "пара", "два", "две");
+        private static final List<String> threeStr = List.of("three", "панг", "тройка", "три");
+        private static final List<String> fourStr = List.of("four", "конг", "четверка", "четыре");
+        private static final List<String> orderedStr = List.of("ordered", "чоу", "последовательность", "подряд");
 
         public static CombinationType of(List<String> parts) {
             return switch (parts.get(0)) {
@@ -47,8 +54,13 @@ public record Combination(CombinationType type, Boolean isOpen, Tile tile) imple
                 default -> false;
             };
         }
-    }
+        public static boolean isCorrectCombination(String name) {
+            return singleStr.contains(name) || pairStr.contains(name)
+                    || threeStr.contains(name) || fourStr.contains(name)
+                    || orderedStr.contains(name);
+        }
 
+    }
     /**
      * Конструктор
      * @throws IllegalArgumentException, если введённые значения пусты или противоречат логике игры

@@ -10,7 +10,7 @@ import java.util.Arrays;
  * */
 public class ScoringCalculator {
     private static Rules activeRules = new Rules();
-    private final static String HELP = "Использование: java -jar hand_scoring.jar ветер игрока ветер преимущественный [собранные кости, с разделением комбинаций через \';\']  [перечень флагов через\';\']";
+    private final static String HELP = "Использование: java -jar hand_scoring.jar ветер игрока ветер преимущественный [собранные кости, с разделением комбинаций через \' ; \']  [перечень флагов через\' + \']";
 
     public static Rules getActiveRules() {
         return activeRules;

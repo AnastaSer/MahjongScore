@@ -1,12 +1,11 @@
 package com.mahjong.hand_scoring.utils;
 
-import com.mahjong.hand_scoring.model.Dragon;
-import com.mahjong.hand_scoring.model.Tile;
-import com.mahjong.hand_scoring.model.Wind;
+import com.mahjong.hand_scoring.model.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -82,6 +81,10 @@ public class StringHelper {
         return Tile.isCorrectTileNumber(maybeTileNumber) || Wind.isCorrectWindName(maybeTileNumber) || Dragon.isCorrectDragonName(maybeTileNumber);
     }
 
+    public static boolean isCombination(String maybeCombination) {
+        return Combination.CombinationType.isCorrectCombination(maybeCombination);
+    }
+
     public static Pair<String, String> combinationStr(String inputStr) {
         Pair<String, String> notFound = Pair.of("", inputStr);
         String[] parts = toParts(inputStr);
@@ -91,12 +94,13 @@ public class StringHelper {
         }
         try {
             isOpen(parts[0]);
-            if (isTileNumber(parts[3]))
-                return separate(parts, 4);
-            else if (parts.length >= 5 && isTileNumber(parts[4]))
-                return separate(parts, 5);
-            else
-                return notFound;
+            if (isCombination(parts[1])) {
+                if (isTileNumber(parts[3]))
+                    return separate(parts, 4);
+                else if (parts.length >= 5 && isTileNumber(parts[4]))
+                    return separate(parts, 5);
+            }
+            return notFound;
         } catch (IllegalArgumentException ignore) {
             System.out.println("Не описывает комбинацию");
             return notFound;
@@ -104,10 +108,43 @@ public class StringHelper {
     }
 
     public static Pair<String, String> inputTileStr(String inputStr) {
-        return Pair.of("", inputStr);
+        Pair<String, String> notFound = Pair.of("", inputStr);
+        String[] parts = toParts(inputStr);
+        if (parts.length < 1) {
+            System.out.println("Ничего не передано");
+            return notFound;
+        }
+        if (isSeparator(parts[0])) {
+            return separate(parts, 1);
+        }
+        try {
+            isOpen(parts[0]);
+            if (isTileNumber(parts[2]))
+                return separate(parts, 3);
+            else if (parts.length >= 4 && isTileNumber(parts[3]))
+                return separate(parts, 4);
+            else
+                return notFound;
+        } catch (IllegalArgumentException ignore) {
+            System.out.println("Не описывает коcть");
+            return notFound;
+        }
     }
 
-    public static Pair<String, String> handFlagStr(String inputStr) {
-        return Pair.of("", inputStr);
+    public static Pair<Optional<HandFlags.Flag>, String> handFlagStr(String inputStr) {
+        Pair<Optional<HandFlags.Flag>, String> notFound = Pair.of(Optional.empty(), inputStr);
+        int separatorIndex = inputStr.indexOf("+");
+        try {
+            if (separatorIndex > 0) {
+                HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr.substring(0, separatorIndex)));
+                return Pair.of(Optional.of(flag), normalize(inputStr.substring(separatorIndex + 1)));
+            } else {
+                HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr));
+                return Pair.of(Optional.of(flag), "");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Неизвестное описание: " + e.getMessage());
+            return notFound;
+        }
     }
 }

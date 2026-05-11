@@ -6,6 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CompleteHand {
     private InputHand inputHand = null;
@@ -50,13 +51,13 @@ public class CompleteHand {
                     inputTiles.add(InputTile.of(nextTile.getLeft()));
                     combinationsAndFlags = nextTile.getRight();
                 } else {
-                    Pair<String, String> nextFlag = StringHelper.handFlagStr(combinationsAndFlags);
+                    Pair<Optional<HandFlags.Flag>, String> nextFlag = StringHelper.handFlagStr(combinationsAndFlags);
                     if (!nextFlag.getLeft().isEmpty()) {
                         if (!inputTiles.isEmpty()) {
                             inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles));
                             inputTiles.clear();
                         }
-                        inputFlags.add(HandFlags.Flag.of(nextFlag.getLeft()));
+                        inputFlags.add(nextFlag.getLeft().get());
                         combinationsAndFlags = nextFlag.getRight();
                     } else {
                         throw new IllegalArgumentException("Невозможно прочитать переданные параметры: " + combinationsAndFlags);
@@ -69,6 +70,10 @@ public class CompleteHand {
             inputTiles.clear();
         }
         return new CompleteHand(new InputHand(playerWind, vipWind, new HandFlags(inputFlags), inputCombinations));
+    }
+
+    public InputHand getInputHand() {
+        return inputHand;
     }
 
     public long getScore() {
