@@ -60,7 +60,7 @@ public class HandFlags {
                 case "завершение свободной костью" -> FINISHED_WITH_FREE_TILE;
                 case "завершение последней доступной" -> FINISHED_WITH_LAST_IN_GAME;
                 case "завершение ограблением открытого конга" -> FINISHED_BY_ROBBING_OPEN_KONG;
-                default -> throw new IllegalArgumentException("Введите точное описание: \'" + description + "\'");
+                default -> throw new IllegalArgumentException("Введите точное описание случая: \'" + description + "\'");
             };
         }
     }

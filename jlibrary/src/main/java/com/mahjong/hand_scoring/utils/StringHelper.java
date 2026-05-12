@@ -89,7 +89,6 @@ public class StringHelper {
         Pair<String, String> notFound = Pair.of("", inputStr);
         String[] parts = toParts(inputStr);
         if (parts.length < 4) {
-            System.out.println("Слишком мало слов для комбинации");
             return notFound;
         }
         try {
@@ -102,7 +101,6 @@ public class StringHelper {
             }
             return notFound;
         } catch (IllegalArgumentException ignore) {
-            System.out.println("Не описывает комбинацию");
             return notFound;
         }
     }
@@ -111,7 +109,6 @@ public class StringHelper {
         Pair<String, String> notFound = Pair.of("", inputStr);
         String[] parts = toParts(inputStr);
         if (parts.length < 1) {
-            System.out.println("Ничего не передано");
             return notFound;
         }
         if (isSeparator(parts[0])) {
@@ -126,25 +123,18 @@ public class StringHelper {
             else
                 return notFound;
         } catch (IllegalArgumentException ignore) {
-            System.out.println("Не описывает коcть");
             return notFound;
         }
     }
 
-    public static Pair<Optional<HandFlags.Flag>, String> handFlagStr(String inputStr) {
-        Pair<Optional<HandFlags.Flag>, String> notFound = Pair.of(Optional.empty(), inputStr);
+    public static Pair<Optional<HandFlags.Flag>, String> handFlagStr(String inputStr) throws IllegalArgumentException {
         int separatorIndex = inputStr.indexOf("+");
-        try {
-            if (separatorIndex > 0) {
-                HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr.substring(0, separatorIndex)));
-                return Pair.of(Optional.of(flag), normalize(inputStr.substring(separatorIndex + 1)));
-            } else {
-                HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr));
-                return Pair.of(Optional.of(flag), "");
-            }
-        } catch (IllegalArgumentException e) {
-            System.out.println("Неизвестное описание: " + e.getMessage());
-            return notFound;
+        if (separatorIndex > 0) {
+            HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr.substring(0, separatorIndex)));
+            return Pair.of(Optional.of(flag), normalize(inputStr.substring(separatorIndex + 1)));
+        } else {
+            HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr));
+            return Pair.of(Optional.of(flag), "");
         }
     }
 }
