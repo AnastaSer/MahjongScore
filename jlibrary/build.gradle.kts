@@ -13,6 +13,13 @@ tasks.jar {
     manifest {
         attributes["Main-Class"] = "com.mahjong.hand_scoring.ScoringCalculator"
     }
+
+    // Берём все зависимости и упаковываем их внутрь JAR
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    }) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }
 
 repositories {

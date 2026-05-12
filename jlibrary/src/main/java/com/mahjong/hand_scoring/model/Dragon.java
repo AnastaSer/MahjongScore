@@ -21,7 +21,8 @@ public enum Dragon {
 
     private static final List<String> whiteDragon = List.of("white", "белый");
     private static final List<String> redDragon = List.of("red", "красный");
-    private static final List<String> greenDragon = List.of("green", "зелёный");
+    private static final List<String> greenDragon = List.of("green", "зелёный", "зеленый");
+
     /**
      * Метод-фабрика для создания дракона по словесному обозначению его цвета
      * @throws IllegalArgumentException, если введённые значения некорректны
@@ -37,6 +38,9 @@ public enum Dragon {
         throw new IllegalArgumentException("Введите корректный цвет дракона");
     }
 
+    /**
+     * Метод, проверющий, является ли переданный параметр цветом дракона
+     * */
     public static boolean isCorrectDragonName(String name) {
         return whiteDragon.contains(name) || redDragon.contains(name) || greenDragon.contains(name);
     }

@@ -1,5 +1,6 @@
 package com.mahjong.hand_scoring.model;
 
+import com.mahjong.hand_scoring.ScoringCalculator;
 import com.mahjong.hand_scoring.utils.StringHelper;
 import com.mahjong.hand_scoring.utils.TilesHelper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -8,19 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.mahjong.hand_scoring.model.HandFlags.Flag.*;
+
+/**
+ * Класс для преобразования введённых данных и расчёта очков одной руки
+ * */
 public class CompleteHand {
     private InputHand inputHand = null;
     private long score = 0;
 
     private CompleteHand() {}
 
-    private CompleteHand(InputHand inputHand) {
+    /**
+     * Конструктор, принимающий собранную игроком руку и запускающий расчёт её стоимости
+     * */
+    public CompleteHand(InputHand inputHand) {
         if (inputHand == null)
             throw new IllegalArgumentException("Введите собранную игроком руку или используйте конструктор по умолчанию");
         this.inputHand = inputHand;
         count();
     }
 
+    /**
+     * Метод-фабрика, преобразующий массив строк в объект InputHand.
+     * @param allInput введённые пользователем строки в виде массива
+     * @throws IllegalArgumentException если допущена ошибка в параметрах
+     * */
     public static CompleteHand of(String[] allInput) {
         if (allInput == null || allInput.length == 0 || (allInput.length == 1 && allInput[0].isEmpty()))
             return new CompleteHand();
@@ -90,7 +104,67 @@ public class CompleteHand {
         return score;
     }
 
+    /**
+     * Метод для расчёта суммы очков за всю комбинацию с учётом ветров и флагов
+     * */
     private void count() {
-        score = 0;
+        score = inputHand.getScore();
+        int doubles = inputHand.getDoubles();
+        System.out.println("Из руки очки: " + score + ", удвоения: " + doubles);
+
+        HandFlags allFlags = inputHand.getKnownFlags();
+        if (allFlags.hasFlag(CLEAR_SUIT) || allFlags.hasFlag(TRUMPS)) {
+            doubles += ScoringCalculator.getActiveRules().howManyDoublesForClearSuit();
+        }
+        if (allFlags.hasFlag(CLEAR_SUIT_WITH_TRUMPS)) {
+            doubles++;
+        }
+        if (allFlags.hasFlag(TRUMPS_ONES_NINES)) {
+            doubles++;
+        }
+
+        if (allFlags.hasFlag(MAHJONG)) {
+            score += ScoringCalculator.getActiveRules().mahjongScore();
+            if (allFlags.hasFlag(FINISHED_FROM_THE_WALL)) {
+                score += 2;
+            }
+            if (allFlags.hasFlag(FINISHED_WITH_ONE_POSSIBLE)) {
+                score += 2;
+            }
+            if (allFlags.hasFlag(NO_ORDEREDS)) {
+                score += ScoringCalculator.getActiveRules().noOrderedAddScore();
+                doubles += ScoringCalculator.getActiveRules().noOrderedDouble();
+            }
+            if (allFlags.hasFlag(MIZER)) {
+                doubles++;
+            }
+            if (allFlags.hasFlag(HAS_ALL_DRAGONS)) {
+                doubles++;
+            }
+            if (allFlags.hasFlag(HAS_ALL_WINDS)) {
+                doubles++;
+            }
+            if (allFlags.hasFlag(WAS_WAITING_FROM_THE_START)) {
+                doubles++;
+            }
+            if (allFlags.hasFlag(FINISHED_WITH_FREE_TILE)) {
+                doubles++;
+            }
+            if (allFlags.hasFlag(FINISHED_WITH_LAST_IN_GAME)) {
+                doubles++;
+            }
+            if (allFlags.hasFlag(FINISHED_BY_ROBBING_OPEN_KONG)) {
+                doubles++;
+            }
+        }
+
+        for (int i = 0; i < doubles; i++)
+            score *= 2;
+
+        System.out.println("Итог очки: " + score + ", удвоения: " + doubles);
+
+        if (ScoringCalculator.getActiveRules().maximumOneHandScore().isPresent()) {
+            score = Math.min(score, ScoringCalculator.getActiveRules().maximumOneHandScore().get());
+        }
     }
 }

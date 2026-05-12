@@ -77,7 +77,7 @@ public record Tile(TileType type, int number) implements Comparable<Tile> {
                 case "flower", "цветок" -> TileType.BONUS_FLOWER;
                 default -> throw new IllegalArgumentException("Уточните тип бонуса");
             };
-            default -> throw new IllegalArgumentException("Введите первой масть");
+            default -> throw new IllegalArgumentException("Введите первой масть " + parts[0]);
         };
         String from = switch (type) {
             case BONUS_FLOWER, BONUS_SEASON -> parts[2];
@@ -145,6 +145,20 @@ public record Tile(TileType type, int number) implements Comparable<Tile> {
     }
 
     /**
+     * Метод, проверяющий, является ли кость козырем, дающим удвоение
+     * */
+    public boolean isDoubleScore(Wind playerWind, Wind vipWind) {
+        return isDragon() || isSameWind(playerWind) || isSameWind(vipWind);
+    }
+
+    /**
+     * Метод, возвращающий стоимость открытой тройки кости
+     * */
+    public int countThree() {
+        return isSuit() && number > 2 && number < 9 ? 2 : 4;
+    }
+
+    /**
      * Метод, возвращающий самое простое строковое описание данной кости
      * */
     public String ruStr() {
@@ -168,6 +182,9 @@ public record Tile(TileType type, int number) implements Comparable<Tile> {
                 .compare(this, o);
     }
 
+    /**
+     * Метод, проверющий, является ли переданный параметр подходящим числом.
+     * */
     public static boolean isCorrectTileNumber(String number) {
         return numbers.contains(number);
     }

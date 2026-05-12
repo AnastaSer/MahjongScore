@@ -79,7 +79,8 @@ public class CombinationTest {
                 "opened three dragon red",
                 "opened four dot 9",
                 "closed ordered three sign 7",
-                "opened ordered four bamboo 6");
+                "opened ordered four bamboo 6",
+                "закрытая четвёрка ветер северный");
         correctInputs.stream().forEach(s-> {
             System.out.println("Тестирую: '" + s + "'");
             assert(!createFrom(s, Optional.empty()).isEmpty());

@@ -23,6 +23,7 @@ public enum Wind {
     private static final List<String> southWinds = List.of("south", "юг", "южный");
     private static final List<String> westWinds = List.of("west", "запад", "западный");
     private static final List<String> northWinds = List.of("north", "север", "северный");
+
     /**
      * Метод-фабрика для создания ветра по словесному обозначению его направления
      * @throws IllegalArgumentException, если введённые значения некорректны
@@ -40,6 +41,9 @@ public enum Wind {
         throw new IllegalArgumentException("Введите корректное направление ветра");
     }
 
+    /**
+     * Метод, проверющий, является ли переданный параметр направлением ветра
+     * */
     public static boolean isCorrectWindName(String name) {
         return eastWinds.contains(name) || southWinds.contains(name)
                 || westWinds.contains(name) || northWinds.contains(name);

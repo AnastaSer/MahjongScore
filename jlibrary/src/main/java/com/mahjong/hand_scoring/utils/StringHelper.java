@@ -48,10 +48,20 @@ public class StringHelper {
         return Arrays.stream(parts).skip(toSkip).collect(Collectors.joining(" "));
     }
 
+    /**
+     * Преобразует массив строк в строку, содержащую первые @toWrite слов
+     * @param parts массив строк
+     * @param toWrite число слов, что необходимо записать
+     * */
     public static String firstParts(String[] parts, int toWrite) {
         return Arrays.stream(parts).limit(toWrite).collect(Collectors.joining(" "));
     }
 
+    /**
+     * Преобразует массив строк в две строки. В первой - слова до @where. Во второй - все остальные.
+     * @param parts массив строк
+     * @param where число слов, что необходимо записать в первую часть
+     * */
     public static Pair<String, String> separate(String[] parts, int where) {
         return Pair.of(firstParts(parts, where), skipParts(parts, where));
     }
@@ -77,14 +87,25 @@ public class StringHelper {
         return input.trim().replace("  ", " ").toLowerCase();
     }
 
+    /**
+     * Проверка, является ли @maybeTileNumber числом, ветром или драконом
+     * */
     public static boolean isTileNumber(String maybeTileNumber) {
         return Tile.isCorrectTileNumber(maybeTileNumber) || Wind.isCorrectWindName(maybeTileNumber) || Dragon.isCorrectDragonName(maybeTileNumber);
     }
 
+    /**
+     * Проверка, является ли @maybeCombination корректным описанием комбинации
+     * */
     public static boolean isCombination(String maybeCombination) {
         return Combination.CombinationType.isCorrectCombination(maybeCombination);
     }
 
+    /**
+     * Отделение описания комбинации из переданной строки.
+     * @return Пару строк: описание комбинации и остаток переданной строки.
+     * Если невозможно выделить описание комбинации, вернёт пустую строку и изначальную.
+     * */
     public static Pair<String, String> combinationStr(String inputStr) {
         Pair<String, String> notFound = Pair.of("", inputStr);
         String[] parts = toParts(inputStr);
@@ -105,6 +126,11 @@ public class StringHelper {
         }
     }
 
+    /**
+     * Отделение описания одной кости из переданной строки.
+     * @return Пару строк: описание кости и остаток переданной строки.
+     * Если невозможно выделить описание кости, вернёт пустую строку и изначальную.
+     * */
     public static Pair<String, String> inputTileStr(String inputStr) {
         Pair<String, String> notFound = Pair.of("", inputStr);
         String[] parts = toParts(inputStr);
@@ -127,7 +153,13 @@ public class StringHelper {
         }
     }
 
-    public static Pair<Optional<HandFlags.Flag>, String> handFlagStr(String inputStr) throws IllegalArgumentException {
+    /**
+     * Отделение описания одного флага из переданной строки.
+     * Разделитель  ' + '
+     * @return Пару: Флаг и остаток переданной строки.
+     * @throws IllegalArgumentException если переданная строка пуста или не может быть преобразована во флаг
+     * */
+    public static Pair<Optional<HandFlags.Flag>, String> handFlagStr(String inputStr) {
         int separatorIndex = inputStr.indexOf("+");
         if (separatorIndex > 0) {
             HandFlags.Flag flag = HandFlags.Flag.of(normalize(inputStr.substring(0, separatorIndex)));

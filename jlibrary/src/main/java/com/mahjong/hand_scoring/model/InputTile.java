@@ -11,6 +11,7 @@ public record InputTile(InputTileType type, boolean isOpen, Tile tile) {
     public enum InputTileType {
         TILE, SEPARATOR
     }
+
     /**
      * Конструктор
      * @throws IllegalArgumentException если задан тип TILE, но кость не определена

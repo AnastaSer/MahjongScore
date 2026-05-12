@@ -1,13 +1,38 @@
 package com.mahjong.hand_scoring.model;
 
+import java.util.Optional;
+
 /**
  * Класс для хранения актуальных для игры правил.
  * */
-public class Rules {
+public interface Rules {
     /**
      * Метод возвращает признак, можно ли собирать более 3х фишек в последовательность
      * */
-    public boolean canUseOrderedFour() {
-        return false;
-    }
+    boolean canUseOrderedFour();
+
+    /**
+     * Метод, возращающий число удвоений за чистую масть или чистые козыри
+     * */
+    int howManyDoublesForClearSuit();
+
+    /**
+     * Метод, возвращающий очки за собранный маджонг
+     * */
+    int mahjongScore();
+
+    /**
+     * Метод, возвращающий число удвоений за маджонг без последовательностей
+     * */
+    int noOrderedDouble();
+
+    /**
+     * Метод, возвращающий число добавленных очков за маджонг без последовательностей
+     * */
+    int noOrderedAddScore();
+
+    /**
+     * Метод, возвращающий максимальное число очков за одну руку
+     * */
+    Optional<Integer> maximumOneHandScore();
 }

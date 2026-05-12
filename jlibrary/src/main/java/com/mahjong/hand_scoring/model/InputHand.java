@@ -1,6 +1,7 @@
 package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.TilesHelper;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +25,8 @@ public class InputHand {
     private Wind vipWind;
     private HandFlags knownFlags;
     private boolean isFull;
+    private int score;
+    private int doubles;
 
     public InputHand(Wind playersWind, Wind vipWind,
                      HandFlags knownFlags, List<Combination> combinations) {
@@ -36,6 +39,16 @@ public class InputHand {
         this.knownFlags = knownFlags == null ? new HandFlags() : knownFlags;
         this.combinations = combinations == null ? new ArrayList<>() : combinations.stream().sorted().collect(Collectors.toList());
         verify();
+        fillScoreAndDoubles();
+    }
+
+    private void fillScoreAndDoubles() {
+        if (!combinations.isEmpty()) {
+            List<Pair<Integer, Integer>> countsAndDoubles = combinations.stream().map(combination ->
+                    combination.countForWind(playersWind, vipWind)).collect(Collectors.toList());
+            score = countsAndDoubles.stream().mapToInt(pair -> pair.getLeft()).sum();
+            doubles = countsAndDoubles.stream().mapToInt(pair -> pair.getRight()).sum();
+        }
     }
 
     public InputHand(Wind playersWind, Wind vipWind, List<Combination> combinations) {
@@ -127,6 +140,14 @@ public class InputHand {
         return isFull;
     }
 
+    public int getScore() {
+        return score;
+    }
+
+    public int getDoubles() {
+        return doubles;
+    }
+
     /**
      * Главный метод проверки корректности переданных пользователем данных.
      * Может принимать как полные наборы, так и сокращённые.
@@ -213,6 +234,10 @@ public class InputHand {
         }
     }
 
+    /**
+     * Метод, выставляющий флаги, зависящие от переданных костей.
+     * Работает только для полного переданного набора.
+     * */
     private void setFlags() {
         if (!isFull)
             return;
