@@ -1,7 +1,7 @@
 # MahjongScore
 Full server + client calculator for mahjong game
 
-## 📜 Лицензия
+### 📜 Лицензия
 
 Проект распространяется под лицензией [Apache License 2.0](LICENSE).
 
@@ -9,6 +9,6 @@ Full server + client calculator for mahjong game
 - Вы не можете подать патентный иск на пользователей этого кода.
 - При распространении вы обязаны сохранять уведомление об авторстве.
 
-## 👤 Автор
+### 👤 Автор
 
-Анастасия Мишустина @AnastaSer
+Мишустина Анастасия Сергеевна (AnastaSer)
