@@ -1,1 +1,1 @@
-rootProject.name = "hand_scorring"
+rootProject.name = "hand_scoring"

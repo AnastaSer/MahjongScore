@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.mahjong.hand_scoring.model.HandFlags.Flag.*;
 
@@ -20,7 +22,7 @@ public class CompleteHand {
 
     private InputHand inputHand = null;
     private Rules activeRules = null;
-    private long score = 0;
+    private int score = 0;
 
     private CompleteHand() {}
 
@@ -36,6 +38,42 @@ public class CompleteHand {
         this.activeRules = activeRules;
         log.info("Active rules: {}", activeRules.name());
         count();
+    }
+
+    /**
+     * Метод-фабрика, принимающий данные, переданные списками
+     * */
+    public static CompleteHand of(String playerWindStr, String vipWindStr, List<String> combinationsOrTiles, List<String> flags, String activeRulesStr) {
+        if (StringHelper.isEmpty(playerWindStr)&& StringHelper.isEmpty(vipWindStr)
+                && (combinationsOrTiles == null || combinationsOrTiles.isEmpty())
+                && (flags == null || flags.isEmpty()))
+            return new CompleteHand();
+        Rules activeRules = !StringHelper.isEmpty(activeRulesStr) && RulesSet.isRulesVariant(activeRulesStr) ?
+                    RulesSet.of(activeRulesStr) : RulesSet.load();
+        Wind playerWind;
+        Wind vipWind;
+        try {
+            playerWind = Wind.of(playerWindStr);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ошибка в параметрах: '" + playerWindStr + "'. А именно: " + e.getMessage());
+        }
+        try {
+            vipWind = Wind.of(vipWindStr);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Ошибка в параметрах: '" + vipWindStr + "'. А именно: " + e.getMessage());
+        }
+        if ((combinationsOrTiles == null || combinationsOrTiles.isEmpty()) && (flags == null || flags.isEmpty())) {
+            InputHand newHand = new InputHand(playerWind, vipWind, null);
+            return new CompleteHand(newHand, activeRules);
+        }
+        String combinationsAndFlags = "";
+        if (combinationsOrTiles != null && !combinationsOrTiles.isEmpty()) {
+            combinationsAndFlags += combinationsOrTiles.stream().collect(Collectors.joining(" "));
+        }
+        if (flags != null && !flags.isEmpty()) {
+            combinationsAndFlags += " " + flags.stream().collect(Collectors.joining(" + "));
+        }
+        return fromCompleteString(combinationsAndFlags, playerWind, vipWind, activeRules);
     }
 
     /**
@@ -65,6 +103,13 @@ public class CompleteHand {
             return new CompleteHand(newHand, activeRules);
         }
         String combinationsAndFlags = StringHelper.skipParts(allInput, 2);
+        return fromCompleteString(combinationsAndFlags,playerWind, vipWind, activeRules);
+    }
+
+    /**
+     * Общий метод-преобразователь переданных строками данных в наборы комбинаций
+     * */
+    private static CompleteHand fromCompleteString(String combinationsAndFlags, Wind playerWind, Wind vipWind, Rules activeRules) {
         List<Combination> inputCombinations = new ArrayList<>();
         List<InputTile> inputTiles = new ArrayList<>();
         List<HandFlags.Flag> inputFlags = new ArrayList<>();
@@ -108,7 +153,7 @@ public class CompleteHand {
         return inputHand;
     }
 
-    public long getScore() {
+    public int getScore() {
         return score;
     }
 
@@ -172,5 +217,19 @@ public class CompleteHand {
         if (activeRules.maximumOneHandScore().isPresent()) {
             score = Math.min(score, activeRules.maximumOneHandScore().get());
         }
+    }
+
+    /**
+     * Метод, возвращающий признак, является ли рука маджонгом
+     * */
+    public boolean isMahjong() {
+        return inputHand.getKnownFlags().hasFlag(MAHJONG);
+    }
+
+    /**
+     * Метод, возвращающий все предъявленные игроком кости
+     * */
+    public Map<Tile, Integer> allKnownTiles() {
+        return inputHand.getAllTiles();
     }
 }
