@@ -1,6 +1,8 @@
 package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.StringHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +17,8 @@ public record RulesSet(boolean canUseOrderedFour,
                        int noOrderedAddScore,
                        Optional<Integer> maximumOneHandScore,
                        String name) implements Rules {
+    private final static Logger log = LoggerFactory.getLogger(RulesSet.class);
+
     private final static String DEFAULT_RULES = "classic.rules";
     private final static Map<String, String> rulesMap = Map.of(
             "классика", "classic.rules",
@@ -67,7 +71,7 @@ public record RulesSet(boolean canUseOrderedFour,
      * Метод-фабрика, возвращающий вариант правил по словесному описанию
      * */
     public static Rules of(String lastArg) {
-        System.out.println("Create from: " + lastArg + " file: " + rulesMap.get(StringHelper.normalize(lastArg)));
+        log.trace("Create from: {} found file: {}", lastArg, rulesMap.get(StringHelper.normalize(lastArg)));
         return load(rulesMap.get(StringHelper.normalize(lastArg)));
     }
 

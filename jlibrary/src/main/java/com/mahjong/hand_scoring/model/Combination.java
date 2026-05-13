@@ -3,11 +3,9 @@ package com.mahjong.hand_scoring.model;
 import com.mahjong.hand_scoring.utils.StringHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
+
 /**
  * Класс для хранения собранных костей в виде комбинаций.
  * Содержит перечисление с типами комбинаций.

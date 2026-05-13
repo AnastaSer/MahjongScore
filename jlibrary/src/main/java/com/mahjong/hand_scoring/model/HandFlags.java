@@ -1,6 +1,8 @@
 package com.mahjong.hand_scoring.model;
 
 import com.mahjong.hand_scoring.utils.StringHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -11,6 +13,8 @@ import java.util.stream.Stream;
  * Класс для полей, хранящих флаги собранной игроком руки
  * */
 public class HandFlags {
+    private final static Logger log = LoggerFactory.getLogger(HandFlags.class);
+
     public enum Flag {
         CLEAR_SUIT(0x1),
         CLEAR_SUIT_WITH_TRUMPS(0x2),
@@ -178,7 +182,7 @@ public class HandFlags {
         try {
             verify();
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка обработки флагов: " + e.getMessage());
+            log.warn("Ошибка обработки флагов: {}", e.getMessage());
             copyFrom(was);
         }
     }
@@ -189,7 +193,7 @@ public class HandFlags {
         try {
             verify();
         } catch (IllegalArgumentException e) {
-            System.out.println("Ошибка обработки флага:" + e.getMessage());
+            log.warn("Ошибка обработки флагов: {}", e.getMessage());
             copyFrom(was);
         }
     }

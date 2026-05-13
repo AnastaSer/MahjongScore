@@ -1,9 +1,10 @@
 package com.mahjong.hand_scoring.model;
 
-import com.mahjong.hand_scoring.ScoringCalculator;
 import com.mahjong.hand_scoring.utils.StringHelper;
 import com.mahjong.hand_scoring.utils.TilesHelper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ import static com.mahjong.hand_scoring.model.HandFlags.Flag.*;
  * Класс для преобразования введённых данных и расчёта очков одной руки
  * */
 public class CompleteHand {
+    private final static Logger log = LoggerFactory.getLogger(CompleteHand.class);
+
     private InputHand inputHand = null;
     private Rules activeRules = null;
     private long score = 0;
@@ -31,7 +34,7 @@ public class CompleteHand {
             activeRules = RulesSet.load();
         this.inputHand = inputHand;
         this.activeRules = activeRules;
-        System.out.println("Active rules: " + activeRules.name());
+        log.info("Active rules: {}", activeRules.name());
         count();
     }
 
@@ -115,8 +118,7 @@ public class CompleteHand {
     private void count() {
         score = inputHand.getScore();
         int doubles = inputHand.getDoubles();
-        System.out.println("Из руки очки: " + score + ", удвоения: " + doubles);
-
+        log.info("Из руки очки: {}, удвоения: {}", score, doubles);
         HandFlags allFlags = inputHand.getKnownFlags();
         if (allFlags.hasFlag(CLEAR_SUIT) || allFlags.hasFlag(TRUMPS)) {
             doubles += activeRules.howManyDoublesForClearSuit();
@@ -166,8 +168,7 @@ public class CompleteHand {
         for (int i = 0; i < doubles; i++)
             score *= 2;
 
-        System.out.println("Итог очки: " + score + ", удвоения: " + doubles);
-
+        log.info("До применения максимума очки: {}, удвоения: {}", score, doubles);
         if (activeRules.maximumOneHandScore().isPresent()) {
             score = Math.min(score, activeRules.maximumOneHandScore().get());
         }

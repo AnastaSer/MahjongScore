@@ -27,7 +27,10 @@ repositories {
 }
 
 dependencies {
+    implementation("org.slf4j:slf4j-api:2.0.16")
+    implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("org.apache.commons:commons-lang3:3.14.0")
+
     testImplementation("org.assertj:assertj-core:3.27.6")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
