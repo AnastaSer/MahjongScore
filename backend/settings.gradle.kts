@@ -1,1 +1,1 @@
-rootProject.name = "backend"
+rootProject.name = "mahjong_scoring_server"
