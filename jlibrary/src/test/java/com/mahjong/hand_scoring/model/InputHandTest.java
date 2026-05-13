@@ -10,6 +10,7 @@ import static com.mahjong.hand_scoring.model.HandFlags.Flag.*;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class InputHandTest {
+    private static final Rules activeRules = RulesSet.load();
     private static final Wind west = Wind.WEST;
     private static final Wind east = Wind.EAST;
 
@@ -67,9 +68,9 @@ public class InputHandTest {
     private Optional<InputHand> createFrom(Optional<HandFlags> inputFlags, List<InputTile> inputTiles) {
         try {
             if (inputFlags.isPresent())
-                return Optional.of(new InputHand(inputTiles, west, east, inputFlags.get()));
+                return Optional.of(new InputHand(inputTiles, west, east, inputFlags.get(), activeRules));
             else
-                return Optional.of(new InputHand(inputTiles, west, east));
+                return Optional.of(new InputHand(inputTiles, west, east, activeRules));
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return Optional.empty();
@@ -80,8 +81,8 @@ public class InputHandTest {
     public void correctTests() {
         new InputHand(west, east, null, new ArrayList<>());
         new InputHand(west, east, new HandFlags(), null);
-        new InputHand(null, west, east, new HandFlags());
-        new InputHand(new ArrayList<>(), west, east, null);
+        new InputHand(null, west, east, new HandFlags(), activeRules);
+        new InputHand(new ArrayList<>(), west, east, null, activeRules);
 
         assert(createFrom(List.of(openedOrderedThreeSign1, openedOrderedThreeSign1, openedOrderedThreeSign1, openedOrderedThreeSign1),
                 Optional.empty()).isPresent());

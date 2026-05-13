@@ -16,6 +16,7 @@ import static com.mahjong.hand_scoring.model.HandFlags.Flag.*;
  * */
 public class CompleteHand {
     private InputHand inputHand = null;
+    private Rules activeRules = null;
     private long score = 0;
 
     private CompleteHand() {}
@@ -23,10 +24,14 @@ public class CompleteHand {
     /**
      * Конструктор, принимающий собранную игроком руку и запускающий расчёт её стоимости
      * */
-    public CompleteHand(InputHand inputHand) {
+    public CompleteHand(InputHand inputHand, Rules activeRules) {
         if (inputHand == null)
             throw new IllegalArgumentException("Введите собранную игроком руку или используйте конструктор по умолчанию");
+        if (activeRules == null)
+            activeRules = RulesSet.load();
         this.inputHand = inputHand;
+        this.activeRules = activeRules;
+        System.out.println("Active rules: " + activeRules.name());
         count();
     }
 
@@ -35,7 +40,7 @@ public class CompleteHand {
      * @param allInput введённые пользователем строки в виде массива
      * @throws IllegalArgumentException если допущена ошибка в параметрах
      * */
-    public static CompleteHand of(String[] allInput) {
+    public static CompleteHand of(String[] allInput, Rules activeRules) {
         if (allInput == null || allInput.length == 0 || (allInput.length == 1 && allInput[0].isEmpty()))
             return new CompleteHand();
         if (allInput.length < 2)
@@ -54,7 +59,7 @@ public class CompleteHand {
         }
         if (allInput.length == 2) {
             InputHand newHand = new InputHand(playerWind, vipWind, null);
-            return new CompleteHand(newHand);
+            return new CompleteHand(newHand, activeRules);
         }
         String combinationsAndFlags = StringHelper.skipParts(allInput, 2);
         List<Combination> inputCombinations = new ArrayList<>();
@@ -65,7 +70,7 @@ public class CompleteHand {
                 Pair<String, String> nextCombination = StringHelper.combinationStr(combinationsAndFlags);
                 if (!nextCombination.getLeft().isEmpty()) {
                     if (!inputTiles.isEmpty()) {
-                        inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles));
+                        inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles, activeRules));
                         inputTiles.clear();
                     }
                     inputCombinations.add(Combination.of(nextCombination.getLeft()));
@@ -78,7 +83,7 @@ public class CompleteHand {
                     } else {
                         Pair<Optional<HandFlags.Flag>, String> nextFlag = StringHelper.handFlagStr(combinationsAndFlags);
                         if (!inputTiles.isEmpty()) {
-                            inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles));
+                            inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles, activeRules));
                             inputTiles.clear();
                         }
                         inputFlags.add(nextFlag.getLeft().get());
@@ -90,10 +95,10 @@ public class CompleteHand {
             throw new IllegalArgumentException("Ошибка в параметрах: '" + combinationsAndFlags + "'. А именно: " + e.getMessage());
         }
         if (!inputTiles.isEmpty()) {
-            inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles));
+            inputCombinations.addAll(TilesHelper.tilesToCombinations(inputTiles, activeRules));
             inputTiles.clear();
         }
-        return new CompleteHand(new InputHand(playerWind, vipWind, new HandFlags(inputFlags), inputCombinations));
+        return new CompleteHand(new InputHand(playerWind, vipWind, new HandFlags(inputFlags), inputCombinations), activeRules);
     }
 
     public InputHand getInputHand() {
@@ -114,7 +119,7 @@ public class CompleteHand {
 
         HandFlags allFlags = inputHand.getKnownFlags();
         if (allFlags.hasFlag(CLEAR_SUIT) || allFlags.hasFlag(TRUMPS)) {
-            doubles += ScoringCalculator.getActiveRules().howManyDoublesForClearSuit();
+            doubles += activeRules.howManyDoublesForClearSuit();
         }
         if (allFlags.hasFlag(CLEAR_SUIT_WITH_TRUMPS)) {
             doubles++;
@@ -124,7 +129,7 @@ public class CompleteHand {
         }
 
         if (allFlags.hasFlag(MAHJONG)) {
-            score += ScoringCalculator.getActiveRules().mahjongScore();
+            score += activeRules.mahjongScore();
             if (allFlags.hasFlag(FINISHED_FROM_THE_WALL)) {
                 score += 2;
             }
@@ -132,8 +137,8 @@ public class CompleteHand {
                 score += 2;
             }
             if (allFlags.hasFlag(NO_ORDEREDS)) {
-                score += ScoringCalculator.getActiveRules().noOrderedAddScore();
-                doubles += ScoringCalculator.getActiveRules().noOrderedDouble();
+                score += activeRules.noOrderedAddScore();
+                doubles += activeRules.noOrderedDouble();
             }
             if (allFlags.hasFlag(MIZER)) {
                 doubles++;
@@ -163,8 +168,8 @@ public class CompleteHand {
 
         System.out.println("Итог очки: " + score + ", удвоения: " + doubles);
 
-        if (ScoringCalculator.getActiveRules().maximumOneHandScore().isPresent()) {
-            score = Math.min(score, ScoringCalculator.getActiveRules().maximumOneHandScore().get());
+        if (activeRules.maximumOneHandScore().isPresent()) {
+            score = Math.min(score, activeRules.maximumOneHandScore().get());
         }
     }
 }

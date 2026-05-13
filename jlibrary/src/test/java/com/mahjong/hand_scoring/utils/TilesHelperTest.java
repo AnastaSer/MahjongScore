@@ -1,8 +1,6 @@
 package com.mahjong.hand_scoring.utils;
 
-import com.mahjong.hand_scoring.model.Combination;
-import com.mahjong.hand_scoring.model.InputTile;
-import com.mahjong.hand_scoring.model.Tile;
+import com.mahjong.hand_scoring.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,6 +9,7 @@ import static com.mahjong.hand_scoring.model.Tile.TileType.*;
 import static org.assertj.core.api.Assertions.*;
 
 public class TilesHelperTest {
+    private static final Rules activeRules = RulesSet.load();
     private static final Tile sign1 = new Tile(SIGN, 1);
     private static final Tile sign2 = new Tile(SIGN, 2);
     private static final Tile sign3 = new Tile(SIGN, 3);
@@ -98,7 +97,7 @@ public class TilesHelperTest {
     private void testCorrect(List<Combination> expected, List<InputTile> input) {
         System.out.println("Тестирую набор: " + input);
         System.out.println("Ожидаю:  " + expected);
-        List<Combination> real = TilesHelper.tilesToCombinations(input);
+        List<Combination> real = TilesHelper.tilesToCombinations(input, activeRules);
         System.out.println("Получаю: " + real);
         assertThat(real).containsExactlyInAnyOrderElementsOf(expected);
     }
@@ -106,7 +105,7 @@ public class TilesHelperTest {
     private void testIncorrect(List<InputTile> input) {
         System.out.println("Тестирую набор: " + input);
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> TilesHelper.tilesToCombinations(input))
+                .isThrownBy(() -> TilesHelper.tilesToCombinations(input, activeRules))
                 .withMessage("В игре не может быть одинаковых комбинаций");
     }
 }

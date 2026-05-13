@@ -3,6 +3,7 @@ package com.mahjong.hand_scoring.utils;
 import com.mahjong.hand_scoring.ScoringCalculator;
 import com.mahjong.hand_scoring.model.Combination;
 import com.mahjong.hand_scoring.model.InputTile;
+import com.mahjong.hand_scoring.model.Rules;
 import com.mahjong.hand_scoring.model.Tile;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class TilesHelper {
      * И при выпадении кости из возможной комбинации (другой козырь, бонус, кость другой масти, кость, прерывающая цепочку по возрастанию)
      * @throws IllegalArgumentException, если полученные не последовательные комбинации совпадают один в один
      * */
-    public static List<Combination> tilesToCombinations(List<InputTile> inputTiles) {
+    public static List<Combination> tilesToCombinations(List<InputTile> inputTiles, Rules activeRules) {
         if (inputTiles == null || inputTiles.isEmpty())
             return new ArrayList<>();
         List<Combination> combinations = new ArrayList<>();
@@ -50,7 +51,7 @@ public class TilesHelper {
                             && nextTile.isSuit()
                             && (nextTile.number() == (analyzeLast.tile().number() + 1))) {
                         if (analyze.size() == 3) {
-                            if (ScoringCalculator.getActiveRules().canUseOrderedFour()) {
+                            if (activeRules.canUseOrderedFour()) {
                                 addCombination(new Combination(Combination.CombinationType.ORDERED_FOUR, inputTile.isOpen(), analyzeFirst.tile()), combinations);
                                 analyze.clear();
                             } else {

@@ -35,4 +35,9 @@ public interface Rules {
      * Метод, возвращающий максимальное число очков за одну руку
      * */
     Optional<Integer> maximumOneHandScore();
+
+    /**
+     * Метод, возращающий имя файла, из которого загружены правила
+     * */
+    String name();
 }

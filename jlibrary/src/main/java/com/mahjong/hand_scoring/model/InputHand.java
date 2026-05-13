@@ -55,12 +55,12 @@ public class InputHand {
         this(playersWind, vipWind, new HandFlags(), combinations);
     }
 
-    public InputHand(List<InputTile> tiles, Wind playersWind, Wind vipWind, HandFlags knownFlags) {
-        this(playersWind, vipWind, knownFlags, TilesHelper.tilesToCombinations(tiles));
+    public InputHand(List<InputTile> tiles, Wind playersWind, Wind vipWind, HandFlags knownFlags, Rules activeRules) {
+        this(playersWind, vipWind, knownFlags, TilesHelper.tilesToCombinations(tiles, activeRules));
     }
 
-    public InputHand(List<InputTile> tiles, Wind playersWind, Wind vipWind) {
-        this(playersWind, vipWind, TilesHelper.tilesToCombinations(tiles));
+    public InputHand(List<InputTile> tiles, Wind playersWind, Wind vipWind, Rules activeRules) {
+        this(playersWind, vipWind, TilesHelper.tilesToCombinations(tiles, activeRules));
     }
 
     @Override
