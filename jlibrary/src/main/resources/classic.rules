@@ -1,0 +1,7 @@
+# Базовые правила (по умолчанию)
+can.use.ordered.four=false
+doubles.clear.suit=3
+mahjong.score=20
+no.ordered.double=1
+no.ordered.add.score=0
+max.one.hand.score=2000
