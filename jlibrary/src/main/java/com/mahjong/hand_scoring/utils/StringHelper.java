@@ -169,4 +169,11 @@ public class StringHelper {
             return Pair.of(Optional.of(flag), "");
         }
     }
+
+    /**
+     * Метод, проверяющий, заполнена ли строка
+     * */
+    public static boolean isEmpty(String str) {
+        return str == null || str.isBlank();
+    }
 }

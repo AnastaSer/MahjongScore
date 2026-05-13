@@ -3,7 +3,7 @@ plugins {
 }
 
 base {
-    archivesName.set("hand_scorring")
+    archivesName.set("hand_scoring")
 }
 
 group = "org.example"
@@ -27,8 +27,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.slf4j:slf4j-api:2.0.16")
-    implementation("org.slf4j:slf4j-simple:2.0.16")
+    implementation("org.slf4j:slf4j-api:2.0.9")
     implementation("org.apache.commons:commons-lang3:3.14.0")
 
     testImplementation("org.assertj:assertj-core:3.27.6")
