@@ -48,6 +48,10 @@ public class InputHand {
                     combination.countForWind(playersWind, vipWind)).collect(Collectors.toList());
             score = countsAndDoubles.stream().mapToInt(pair -> pair.getLeft()).sum();
             doubles = countsAndDoubles.stream().mapToInt(pair -> pair.getRight()).sum();
+            if (bonuses.stream().filter(bonus -> bonus.tile().type() == Tile.TileType.BONUS_FLOWER).count() == 4)
+                doubles += 2;
+            if (bonuses.stream().filter(bonus -> bonus.tile().type() == Tile.TileType.BONUS_SEASON).count() == 4)
+                doubles += 2;
         }
     }
 
