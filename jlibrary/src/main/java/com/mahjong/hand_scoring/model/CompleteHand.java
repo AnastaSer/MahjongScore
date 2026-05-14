@@ -50,6 +50,7 @@ public class CompleteHand {
             return new CompleteHand();
         Rules activeRules = !StringHelper.isEmpty(activeRulesStr) && RulesSet.isRulesVariant(activeRulesStr) ?
                     RulesSet.of(activeRulesStr) : RulesSet.load();
+        log.debug("Load activeRules got {} isVariant {} loaded {}", activeRulesStr, RulesSet.isRulesVariant(activeRulesStr), activeRules);
         Wind playerWind;
         Wind vipWind;
         try {
