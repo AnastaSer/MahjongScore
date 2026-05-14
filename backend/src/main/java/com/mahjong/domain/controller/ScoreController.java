@@ -1,14 +1,12 @@
 package com.mahjong.domain.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mahjong.domain.dto.CalculationRequest;
 import com.mahjong.domain.dto.CalculationResponse;
 import com.mahjong.hand_scoring.model.CompleteHand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Контроллер, отвечающий за обработку входящих запросов 
@@ -27,8 +25,10 @@ public class ScoreController {
                 request.combinationsOrTiles(), request.flags(), request.rules());
         log.debug("Got {}", request);
 
-        return new CalculationResponse(
+        CalculationResponse response = new CalculationResponse(
                 completeHand.getScore(), completeHand.isMahjong()
         );
+        log.debug("Post {}", response);
+        return response;
     }
 }
