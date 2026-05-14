@@ -140,6 +140,8 @@ public class StringHelper {
         if (isSeparator(parts[0])) {
             return separate(parts, 1);
         }
+        if (parts.length < 3)
+            return notFound;
         try {
             isOpen(parts[0]);
             if (isTileNumber(parts[2]))
