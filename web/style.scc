@@ -1,0 +1,45 @@
+.form-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.combination-block {
+    background: #f9f9f9;
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+.comb-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.comb-row select {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.remove-comb {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.secondary-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+#commonFlags label, #mahjongFlags label {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 8px;
+}
