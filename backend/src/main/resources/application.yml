@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    com.mahjong: DEBUG               # логи вашего кода
+    com.mahjong.hand_scorring: TRACE  # детали библиотеки
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

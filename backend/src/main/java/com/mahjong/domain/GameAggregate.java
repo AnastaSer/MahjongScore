@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+/**
+ * Задел на будущее
+ * Класс для ведения одной игры
+ * */
 public class GameAggregate {
     private final GameId id;
     private int version;
