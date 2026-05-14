@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+/**
+ * Класс-фабрика, формирующий Rules из файла
+ * */
 public record RulesSet(boolean canUseOrderedFour,
                        int howManyDoublesForClearSuit,
                        int mahjongScore,
@@ -29,10 +32,16 @@ public record RulesSet(boolean canUseOrderedFour,
             "friends.rules", "Светы и компании",
             "parents.rules", "родитетелей");
 
+    /**
+     * Rules по умолчанию загружается с классическими правилами
+     * */
     public static Rules load() {
         return load(DEFAULT_RULES);
     }
 
+    /**
+     * Rules загружается из переданного файла в формате properties
+     * */
     public static Rules load(String resourceName) {
         if (resourceName == null || resourceName.isEmpty())
             resourceName = DEFAULT_RULES;
