@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🀄 Подсчёт очков руки</h1>
+        <h1>🀄 Подсчёт очков одной руки</h1>
         
         <form id="scoreForm">
             <!-- Ветры -->
@@ -67,16 +67,16 @@
                 <div class="form-group">
                     <label>Флаги маджонга:</label>
                     <div>
-                        <label><input type="checkbox" value="мизер"> Мизер</label>
-                        <label><input type="checkbox" value="без последовательностей"> Без последовательностей</label>
-                        <label><input type="checkbox" value="все драконы"> Есть все драконы и один из них в паре</label>
-                        <label><input type="checkbox" value="все ветра"> Есть все ветра и один из них в паре</label>
-                        <label><input type="checkbox" value="предмаджонг со старта"> Ждущая рука со старта</label>
-                        <label><input type="checkbox" value="завершение единственной возможной"> Последняя кость единственная возможная (в середине / с одного открытого края / в пару)</label>
-                        <label><input type="checkbox" value="завершение костью со стены"> Последняя кость взята со стены</label>
-                        <label><input type="checkbox" value="завершение свободной костью"> Последняя кость из Свободных</label>
-                        <label><input type="checkbox" value="завершение последней доступной"> Последняя кость была последней в игре (перед мёртвой рукой)</label>
-                        <label><input type="checkbox" value="завершение ограблением открытого конга"> Последняя кость с открытого конга</label>
+                        <p><label><input type="checkbox" value="мизер"> Мизер</label></p>
+                        <p><label><input type="checkbox" value="без последовательностей"> Без последовательностей</label></p>
+                        <p><label><input type="checkbox" value="все драконы"> Есть все драконы и один из них в паре</label></p>
+                        <p><label><input type="checkbox" value="все ветра"> Есть все ветра и один из них в паре</label></p>
+                        <p><label><input type="checkbox" value="предмаджонг со старта"> Ждущая рука со старта</label></p>
+                        <p><label><input type="checkbox" value="завершение единственной возможной"> Последняя кость единственная возможная (в середине / с одного открытого края / в пару)</label></p>
+                        <p><label><input type="checkbox" value="завершение костью со стены"> Последняя кость взята со стены</label></p>
+                        <p><label><input type="checkbox" value="завершение свободной костью"> Последняя кость из Свободных</label></p>
+                        <p><label><input type="checkbox" value="завершение последней доступной"> Последняя кость была последней в игре (перед мёртвой рукой)</label></p>
+                        <p><label><input type="checkbox" value="завершение ограблением открытого конга"> Последняя кость с открытого конга</label></p>
                     </div>
                 </div>
             </div>
@@ -88,6 +88,10 @@
             <h2>Результат</h2>
             <p><strong>Очки:</strong> <span id="score"></span></p>
             <p><strong>Маджонг:</strong> <span id="isMahjong"></span></p>
+            <div id="appliedFlags" style="display: none;">
+                <p><strong>Применённые комбинации и флаги:</strong></p>
+                <div id="appliedFlagsList"></div>
+            </div>
         </div>
 
         <div id="error" style="display: none;">

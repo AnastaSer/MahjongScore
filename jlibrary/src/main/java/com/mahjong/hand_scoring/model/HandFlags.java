@@ -16,32 +16,36 @@ public class HandFlags {
     private final static Logger log = LoggerFactory.getLogger(HandFlags.class);
 
     public enum Flag {
-        CLEAR_SUIT(0x1),
-        CLEAR_SUIT_WITH_TRUMPS(0x2),
-        TRUMPS(0x4),
-        TRUMPS_ONES_NINES(0x8),
+        CLEAR_SUIT(0x1, "чистая масть"),
+        CLEAR_SUIT_WITH_TRUMPS(0x2, "чистая масть с драконами и ветрами"),
+        TRUMPS(0x4, "только драконы и ветра"),
+        TRUMPS_ONES_NINES(0x8, "драконы, ветра, единицы и девятки"),
 
-        MAHJONG(0x10),
-        MIZER(0x20),
-        NO_ORDEREDS(0x40),
-        HAS_ALL_WINDS(0x80),
-        HAS_ALL_DRAGONS(0x100),
-        WAS_WAITING_FROM_THE_START(0x200),
-        FINISHED_WITH_ONE_POSSIBLE(0x400),
-        FINISHED_FROM_THE_WALL(0x800),
-        FINISHED_WITH_FREE_TILE(0x1000),
-        FINISHED_WITH_LAST_IN_GAME(0x2000),
-        FINISHED_BY_ROBBING_OPEN_KONG(0x4000);
+        MAHJONG(0x10, "маджонг"),
+        MIZER(0x20, "мизер"),
+        NO_ORDEREDS(0x40, "без последовательностей"),
+        HAS_ALL_WINDS(0x80, "все драконы"),
+        HAS_ALL_DRAGONS(0x100, "все ветра"),
+        WAS_WAITING_FROM_THE_START(0x200, "предмаджонг со старта"),
+        FINISHED_WITH_ONE_POSSIBLE(0x400, "завершение единственной возможной"),
+        FINISHED_FROM_THE_WALL(0x800, "завершение костью со стены"),
+        FINISHED_WITH_FREE_TILE(0x1000, "завершение свободной костью"),
+        FINISHED_WITH_LAST_IN_GAME(0x2000, "завершение последней доступной"),
+        FINISHED_BY_ROBBING_OPEN_KONG(0x4000, "завершение ограблением открытого конга" );
 
         private long value;
+        private String name;
 
-        Flag(long value) {
+        Flag(long value, String name) {
             this.value = value;
+            this.name = name;
         }
 
         public long getValue() {
             return value;
         }
+
+        public String getName() { return name; }
 
         /**
          * Метод-фабрика для создания флага руки по словесному обозначению
@@ -241,6 +245,10 @@ public class HandFlags {
         }
         if (hasFlag(Flag.HAS_ALL_DRAGONS) && hasFlag(Flag.HAS_ALL_WINDS))
             throw new IllegalArgumentException("Невозможно собрать и драконов, и ветра для умножения маджонга");
+    }
+
+    public List<String> toListString() {
+        return flagsSet.stream().map(Flag::getName).collect(Collectors.toUnmodifiableList());
     }
 
     @Override
