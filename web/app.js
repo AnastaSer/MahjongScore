@@ -158,10 +158,21 @@ document.getElementById('scoreForm').addEventListener('submit', async (e) => {
         return data;
     })
     .then(data => {
-        document.getElementById('score').textContent = data.score;
-        document.getElementById('isMahjong').textContent = data.isMahjong ? 'Да' : 'Нет';
-        document.getElementById('result').style.display = 'block';
-        document.getElementById('error').style.display = 'none';
+    document.getElementById('score').textContent = data.score;
+    document.getElementById('isMahjong').textContent = data.isMahjong ? 'Да' : 'Нет';
+    
+    // Отображаем применённые флаги
+    const appliedFlagsContainer = document.getElementById('appliedFlags');
+    if (appliedFlagsContainer && data.appliedFlags && data.appliedFlags.length > 0) {
+        const flagsList = data.appliedFlags.map(flag => `<li>${flag}</li>`).join('');
+        appliedFlagsContainer.innerHTML = `<ul>${flagsList}</ul>`;
+        appliedFlagsContainer.style.display = 'block';
+    } else if (appliedFlagsContainer) {
+        appliedFlagsContainer.style.display = 'none';
+    }
+    
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('error').style.display = 'none';
     })
     .catch(err => {
         document.getElementById('errorMessage').textContent = err.message;

@@ -26,7 +26,8 @@ public class ScoreController {
         log.debug("Got {}", request);
 
         CalculationResponse response = new CalculationResponse(
-                completeHand.getScore(), completeHand.isMahjong()
+                completeHand.getScore(), completeHand.isMahjong(),
+                completeHand.getInputHand().getKnownFlags().toListString()
         );
         log.debug("Post {}", response);
         return response;
