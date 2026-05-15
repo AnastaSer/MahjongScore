@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Маджонг — подсчёт очков</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🀄 Подсчёт очков руки</h1>
+        
+        <form id="scoreForm">
+            <!-- Ветры -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ваш ветер:</label>
+                    <select id="playerWind">
+                        <option value="east">Восток</option>
+                        <option value="south">Юг</option>
+                        <option value="west">Запад</option>
+                        <option value="north">Север</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Преимущественный ветер:</label>
+                    <select id="vipWind">
+                        <option value="east">Восток</option>
+                        <option value="south">Юг</option>
+                        <option value="west">Запад</option>
+                        <option value="north">Север</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Правила:</label>
+                    <select id="rules">
+                        <option value="классика">Классические</option>
+                        <option value="друзья">Светины</option>
+                        <option value="родители">Родителей</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Комбинации -->
+            <div class="form-group">
+                <label>Комбинации:</label>
+                <div id="combinationsContainer"></div>
+                <button type="button" id="addCombinationBtn" class="secondary-btn">+ Добавить комбинацию</button>
+            </div>
+
+            <!-- Флаги -->
+            <div class="form-group">
+                <label>Общие флаги:</label>
+                <div id="commonFlags">
+                    <label><input type="checkbox" value="чистая масть"> Чистая масть</label>
+                    <label><input type="checkbox" value="чистая масть с драконами и ветрами"> Масть с драконами</label>
+                    <label><input type="checkbox" value="только драконы и ветра"> Только драконы и ветра</label>
+                    <label><input type="checkbox" value="драконы, ветра, единицы и девятки"> Драконы и ветра с 1 и 9</label>
+                </div>
+            </div>
+
+            <!-- Маджонг -->
+            <div class="form-group">
+                <label><input type="checkbox" id="mahjongCheckbox"> Маджонг (собран)</label>
+            </div>
+            <div id="mahjongFlags" style="display: none;">
+                <div class="form-group">
+                    <label>Флаги маджонга:</label>
+                    <div>
+                        <label><input type="checkbox" value="мизер"> Мизер</label>
+                        <label><input type="checkbox" value="без последовательностей"> Без последовательностей</label>
+                        <label><input type="checkbox" value="все драконы"> Есть все драконы и один из них в паре</label>
+                        <label><input type="checkbox" value="все ветра"> Есть все ветра и один из них в паре</label>
+                        <label><input type="checkbox" value="предмаджонг со старта"> Ждущая рука со старта</label>
+                        <label><input type="checkbox" value="завершение единственной возможной"> Последняя кость единственная возможная (в середине / с одного открытого края / в пару)</label>
+                        <label><input type="checkbox" value="завершение костью со стены"> Последняя кость взята со стены</label>
+                        <label><input type="checkbox" value="завершение свободной костью"> Последняя кость из Свободных</label>
+                        <label><input type="checkbox" value="завершение последней доступной"> Последняя кость была последней в игре (перед мёртвой рукой)</label>
+                        <label><input type="checkbox" value="завершение ограблением открытого конга"> Последняя кость с открытого конга</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Рассчитать</button>
+        </form>
+
+        <div id="result" style="display: none;">
+            <h2>Результат</h2>
+            <p><strong>Очки:</strong> <span id="score"></span></p>
+            <p><strong>Маджонг:</strong> <span id="isMahjong"></span></p>
+        </div>
+
+        <div id="error" style="display: none;">
+            <h3>Ошибка</h3>
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
